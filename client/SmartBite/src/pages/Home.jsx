@@ -1,4 +1,4 @@
-import React from "react";
+import { Link } from "react-router-dom";
 
 export default function Home() {
   return (
@@ -19,34 +19,15 @@ export default function Home() {
         </p>
 
         <div style={styles.buttons}>
-          <button style={styles.primaryBtn}>Scan Product</button>
-          <button style={styles.secondaryBtn}>Search Products</button>
+          <Link to="/scan">
+            <button style={styles.primaryBtn}>Scan Product</button>
+          </Link>
+
+          <Link to="/search">
+            <button style={styles.secondaryBtn}>Search Products</button>
+          </Link>
         </div>
       </section>
-
-      {/* Features Section */}
-      <section style={styles.features}>
-        <div style={styles.featureCard}>
-          <h3>📷 Scan Products</h3>
-          <p>Use your camera to instantly analyze packaged foods.</p>
-        </div>
-
-        <div style={styles.featureCard}>
-          <h3>🥗 Health Score</h3>
-          <p>Get a simple score based on ingredients and nutrition.</p>
-        </div>
-
-        <div style={styles.featureCard}>
-          <h3>⚖️ Compare Foods</h3>
-          <p>See which products are the healthier choice.</p>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer style={styles.footer}>
-        <p>© 2026 SmartBite</p>
-      </footer>
-
     </div>
   );
 }
