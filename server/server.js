@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect("YOUR_MONGODB_CONNECTION_STRING")
+mongoose.connect("mongodb+srv://zgm5057_db_user:VNHStLAENikdbuim@foodproducts.ukcgr3l.mongodb.net/?appName=FoodProducts")
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.log(err));
 
