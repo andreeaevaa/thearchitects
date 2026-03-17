@@ -1,47 +1,33 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import NutritionLabel from "../components/NLabel";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
-  const [selectedFood, setSelectedFood] = useState(null);
   const navigate = useNavigate();
 
-  const API_KEY = "ieyM7Rc0igKN6eHp8UU2l5hbrLQgFr7MBpW6kbuN";
-
   async function handleSearch() {
-    if (!query) return;
-
     try {
-      const response = await fetch(
-        `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${API_KEY}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            query: query,
-            pageSize: 10,
-          }),
-        }
+      const response = await fetch("http://localhost:5000/api/products");
+      const data = await response.json();
+
+      const filteredProducts = data.filter((product) =>
+        product.productName.toLowerCase().includes(query.toLowerCase())
       );
 
-      const data = await response.json();
-      setResults(data.foods || []);
+      setResults(filteredProducts);
     } catch (error) {
-      console.error("Error fetching USDA data:", error);
+      console.error("Error fetching products:", error);
     }
   }
 
   return (
     <div style={{ textAlign: "center", padding: "40px" }}>
-      <h1>Search for a Product</h1>
+      <h1>Search Products</h1>
+
       <input
         type="text"
-        placeholder="Search for a food..."
+        placeholder="Search for a product..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         style={{ padding: "10px", fontSize: "16px", width: "250px" }}
@@ -54,31 +40,28 @@ export default function SearchPage() {
       <br /><br />
 
       <div>
-  {results.length > 0 ? (
-    results.map((food) => (
-      <div
-        key={food.fdcId}
-        style={styles.card}
-        onClick={() =>
-          navigate(`/product/${food.fdcId}`, { state: { food } })
-        }
-      >
-        <h3>{food.description}</h3>
-        <p style={{ color: "#555" }}>Click to view details</p>
+        {results.length > 0 ? (
+          results.map((product) => (
+            <div
+              key={product._id}
+              style={styles.card}
+              onClick={() =>
+                navigate(`/product/${product._id}`, { state: { product } })
+              }
+            >
+              <img
+                src={product.image}
+                alt={product.productName}
+                style={styles.image}
+              />
+              <h3>{product.productName}</h3>
+              <p style={{ color: "#555" }}>Click to view details</p>
+            </div>
+          ))
+        ) : (
+          <p>No results yet</p>
+        )}
       </div>
-    ))
-  ) : (
-    <p>No results yet</p>
-  )}
-</div>
-
-      
-      {selectedFood && (
-  <div>
-    <p>Selected food: {selectedFood.description}</p>
-    <NutritionLabel food={selectedFood} />
-  </div>
-)}
 
       <br />
 
@@ -89,14 +72,6 @@ export default function SearchPage() {
   );
 }
 
-// 🔍 Helper to extract nutrients
-function getNutrient(food, nutrientName) {
-  const nutrient = food.foodNutrients?.find(
-    (n) => n.nutrientName === nutrientName
-  );
-  return nutrient ? nutrient.value : "N/A";
-}
-
 const styles = {
   card: {
     border: "1px solid #ddd",
@@ -104,5 +79,13 @@ const styles = {
     margin: "10px auto",
     width: "300px",
     borderRadius: "10px",
+    cursor: "pointer",
+  },
+  image: {
+    width: "100%",
+    height: "150px",
+    objectFit: "cover",
+    borderRadius: "8px",
+    marginBottom: "10px",
   },
 };

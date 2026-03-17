@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect("mongodb+srv://zgm5057_db_user:VNHStLAENikdbuim@foodproducts.ukcgr3l.mongodb.net/?appName=FoodProducts")
+mongoose.connect("mongodb+srv://zgm5057_db_user:VNHStLAENikdbuim@foodproducts.ukcgr3l.mongodb.net/SmartBite")
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.log(err));
 
