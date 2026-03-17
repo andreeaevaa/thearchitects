@@ -10,7 +10,7 @@ export default function NutritionLabel({ food }) {
       <div style={styles.line}></div>
 
       <p style={styles.calories}>
-        <strong>Calories</strong> {getNutrient(food, "Energy")}
+        <strong>Calories</strong> {food.nutrition?.calories ?? "N/A"}
       </p>
 
       <div style={styles.lineThick}></div>
@@ -19,96 +19,67 @@ export default function NutritionLabel({ food }) {
         <tbody>
           <tr>
             <td><strong>Total Fat</strong></td>
-            <td>{getNutrient(food, "Total lipid (fat)")} g</td>
+            <td>{food.nutrition?.fat ?? "N/A"} g</td>
           </tr>
-
           <tr>
             <td style={styles.indent}>Saturated Fat</td>
-            <td>{getNutrient(food, "Fatty acids, total saturated")} g</td>
+            <td>{food.nutrition?.saturatedFat ?? "N/A"} g</td>
           </tr>
-
-          <tr>
-            <td><strong>Cholesterol</strong></td>
-            <td>{getNutrient(food, "Cholesterol")} mg</td>
-          </tr>
-
           <tr>
             <td><strong>Sodium</strong></td>
-            <td>{getNutrient(food, "Sodium, Na")} mg</td>
+            <td>{food.nutrition?.sodium ?? "N/A"} mg</td>
           </tr>
-
           <tr>
             <td><strong>Total Carbohydrate</strong></td>
-            <td>{getNutrient(food, "Carbohydrate, by difference")} g</td>
+            <td>{food.nutrition?.carbs ?? "N/A"} g</td>
           </tr>
-
-          <tr>
-            <td style={styles.indent}>Dietary Fiber</td>
-            <td>{getNutrient(food, "Fiber, total dietary")} g</td>
-          </tr>
-
           <tr>
             <td style={styles.indent}>Total Sugars</td>
-            <td>{getNutrient(food, "Sugars, total including NLEA")} g</td>
+            <td>{food.nutrition?.sugar ?? "N/A"} g</td>
           </tr>
-
           <tr>
             <td><strong>Protein</strong></td>
-            <td>{getNutrient(food, "Protein")} g</td>
+            <td>{food.nutrition?.protein ?? "N/A"} g</td>
           </tr>
         </tbody>
       </table>
-
-      <div style={styles.lineThick}></div>
     </div>
   );
 }
 
-// 🔍 Helper function
-function getNutrient(food, nutrientName) {
-  const nutrient = food.foodNutrients?.find(
-    (n) => n.nutrientName === nutrientName
-  );
-  return nutrient ? nutrient.value : "0";
-}
-
 const styles = {
   container: {
-    width: "300px",
+    width: "320px",
     border: "2px solid black",
-    padding: "10px",
-    fontFamily: "Arial",
-    margin: "20px auto",
+    padding: "12px",
+    fontFamily: "Arial, sans-serif",
     backgroundColor: "white",
+    color: "black",
+    textAlign: "left",
   },
-
   title: {
-    fontSize: "22px",
+    fontSize: "24px",
     fontWeight: "bold",
-    marginBottom: "5px",
+    margin: 0,
   },
-
   calories: {
-    fontSize: "18px",
+    fontSize: "20px",
     fontWeight: "bold",
+    margin: "8px 0",
   },
-
   table: {
     width: "100%",
     borderCollapse: "collapse",
   },
-
   indent: {
-    paddingLeft: "15px",
+    paddingLeft: "16px",
   },
-
   line: {
     borderTop: "1px solid black",
-    margin: "5px 0",
+    margin: "6px 0",
   },
-
   lineThick: {
-    borderTop: "3px solid black",
+    borderTop: "4px solid black",
     margin: "8px 0",
   },
 };

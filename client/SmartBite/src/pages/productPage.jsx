@@ -3,9 +3,9 @@ import NutritionLabel from "../components/NLabel";
 
 export default function ProductPage() {
   const location = useLocation();
-  const food = location.state?.food;
+  const product = location.state?.product;
 
-  if (!food) {
+  if (!product) {
     return (
       <div style={styles.page}>
         <h2>No product data found</h2>
@@ -16,19 +16,51 @@ export default function ProductPage() {
     );
   }
 
+  const score = product.healthScore ?? 0;
+
   return (
     <div style={styles.page}>
-      <h1 style={styles.title}>{food.description}</h1>
+      <h1 style={styles.title}>{product.productName}</h1>
 
       <div style={styles.content}>
-        <NutritionLabel food={food} />
-
-        <div style={styles.ingredientsBox}>
-          <h2>Ingredients</h2>
-          <p style={styles.ingredientsText}>
-            {food.ingredients || "Ingredients not available for this product."}
-          </p>
+        {/* Image */}
+        <div style={styles.imageBox}>
+          <img
+            src={product.image}
+            alt={product.productName}
+            style={styles.image}
+          />
         </div>
+
+        {/* Health Score */}
+        <div style={styles.scoreBox}>
+          <h2 style={styles.scoreTitle}>Health Score</h2>
+          <div style={styles.scoreNumber}>{score}/100</div>
+
+          <div style={styles.scaleWrapper}>
+            <div style={styles.scaleBar}></div>
+            <div
+              style={{
+                ...styles.scaleMarker,
+                left: `${score}%`,
+              }}
+            ></div>
+          </div>
+
+          <p style={styles.scoreText}>{getScoreMessage(score)}</p>
+        </div>
+
+        {/* Nutrition Label */}
+        <NutritionLabel food={product} />
+      </div>
+
+      <div style={styles.ingredientsBox}>
+        <h2>Ingredients</h2>
+        <p>
+          {product.ingredients && product.ingredients.length > 0
+            ? product.ingredients.join(", ")
+            : "Ingredients not available."}
+        </p>
       </div>
 
       <Link to="/search">
@@ -38,12 +70,24 @@ export default function ProductPage() {
   );
 }
 
+function getScoreMessage(score) {
+  if (score >= 80) return "Very healthy choice";
+  if (score >= 60) return "Moderately healthy";
+  if (score >= 40) return "Average nutritional quality";
+  if (score >= 20) return "Less healthy choice";
+  return "Low nutritional quality";
+}
+
 const styles = {
   page: {
     textAlign: "center",
-    padding: "10px",
+    padding: "40px",
   },
   title: {
+    marginBottom: "20px",
+  },
+  serving: {
+    fontSize: "18px",
     marginBottom: "30px",
   },
   content: {
@@ -54,16 +98,70 @@ const styles = {
     flexWrap: "wrap",
     marginBottom: "30px",
   },
-  ingredientsBox: {
-    width: "320px",
+  imageBox: {
+    width: "260px",
+  },
+  image: {
+    width: "250px",
+    height: "250px",
+    objectFit: "cover",
+    borderRadius: "10px",
+  },
+  scoreBox: {
+    width: "280px",
+    minHeight: "250px",
     border: "1px solid #ccc",
     borderRadius: "10px",
-    padding: "10px",
-    textAlign: "left",
-    backgroundColor: "#fff",
+    padding: "20px",
+    backgroundColor: "white",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
   },
-  ingredientsText: {
-    lineHeight: "1.5",
+  scoreTitle: {
+    marginBottom: "10px",
+  },
+  scoreNumber: {
+    fontSize: "36px",
+    fontWeight: "bold",
+    marginBottom: "20px",
+  },
+  scaleWrapper: {
+    position: "relative",
+    width: "100%",
+    height: "30px",
+    marginBottom: "20px",
+  },
+  scaleBar: {
+    width: "100%",
+    height: "14px",
+    borderRadius: "999px",
+    background:
+      "linear-gradient(to right, #d62828 0%, #f77f00 35%, #fcbf49 50%, #90be6d 75%, #2a9d8f 100%)",
+    marginTop: "8px",
+  },
+  scaleMarker: {
+    position: "absolute",
+    top: "0px",
+    transform: "translateX(-50%)",
+    width: "16px",
+    height: "30px",
+    backgroundColor: "#222",
+    borderRadius: "6px",
+  },
+  scoreText: {
+    fontSize: "16px",
+    color: "#444",
+  },
+  ingredientsBox: {
+    width: "700px",
+    maxWidth: "90%",
+    margin: "0 auto 30px auto",
+    border: "1px solid #ccc",
+    borderRadius: "10px",
+    padding: "20px",
+    textAlign: "left",
+    backgroundColor: "white",
   },
   button: {
     padding: "10px 18px",
