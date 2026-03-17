@@ -62,7 +62,7 @@ export default function SearchPage() {
         key={food.fdcId}
         style={styles.card}
         onClick={() =>
-          navigate(`/food/${food.fdcId}`, { state: { food } })
+          navigate(`/product/${food.fdcId}`, { state: { food } })
         }
       >
         <h3>{food.description}</h3>
