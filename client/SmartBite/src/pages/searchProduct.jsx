@@ -15,6 +15,8 @@ export default function SearchPage() {
         product.productName.toLowerCase().includes(query.toLowerCase())
       );
 
+      console.log("Filtered results:", filteredProducts)
+
       setResults(filteredProducts);
     } catch (error) {
       console.error("Error fetching products:", error);

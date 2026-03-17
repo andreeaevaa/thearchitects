@@ -10,7 +10,7 @@ router.get("/products", async (req, res) => {
 router.get("/products/:id", async (req, res) => {
   const product = await Product.findById(req.params.id);
   res.json(product);
-  console.log("Fetched product:", product.productName);
+  console.log("Fetched product:", product);
 });
 
 router.get("/products/barcode/:barcode", async (req, res) => {
