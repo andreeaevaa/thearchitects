@@ -38,9 +38,7 @@ export default function SearchPage() {
 
   return (
     <div style={{ textAlign: "center", padding: "40px" }}>
-      <h1>Search Products (USDA)</h1>
-
-      {/* Input */}
+      <h1>Search for a Product</h1>
       <input
         type="text"
         placeholder="Search for a food..."
