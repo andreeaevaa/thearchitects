@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import NutritionLabel from "../components/NLabel";
+import { useNavigate } from "react-router-dom";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [selectedFood, setSelectedFood] = useState(null);
+  const navigate = useNavigate();
 
   const API_KEY = "ieyM7Rc0igKN6eHp8UU2l5hbrLQgFr7MBpW6kbuN";
 
@@ -53,26 +55,26 @@ export default function SearchPage() {
 
       <br /><br />
 
-      {/* Results */}
       <div>
-        {results.length > 0 ? (
-          results.map((food) => (
-            <div key={food.fdcId} style={styles.card}>
-              <h3>{food.description}</h3>
-
-              <button onClick={() => {
-                console.log(food);
-                setSelectedFood(food);
-                }}>
-                View Nutrition
-              </button>
-            </div>
-          ))
-        ) : (
-          <p>No results yet</p>
-        )}
+  {results.length > 0 ? (
+    results.map((food) => (
+      <div
+        key={food.fdcId}
+        style={styles.card}
+        onClick={() =>
+          navigate(`/food/${food.fdcId}`, { state: { food } })
+        }
+      >
+        <h3>{food.description}</h3>
+        <p style={{ color: "#555" }}>Click to view details</p>
       </div>
+    ))
+  ) : (
+    <p>No results yet</p>
+  )}
+</div>
 
+      
       {selectedFood && (
   <div>
     <p>Selected food: {selectedFood.description}</p>

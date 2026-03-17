@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom"
 import Home from "./pages/Home";
 import Scan from "./pages/scan";
 import Search from "./pages/searchProduct";
+import ProductPage from "./pages/productPage";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/scan" element={<Scan />} />
       <Route path="/search" element={<Search />} />
+      <Route path="/product/:id" element={<ProductPage />} />
     </Routes>
   );
 }
