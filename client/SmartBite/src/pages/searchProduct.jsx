@@ -24,7 +24,7 @@ export default function SearchPage() {
   }
 
   return (
-    <div style={{ textAlign: "center", padding: "40px" }}>
+    <div style={{ textAlign: "center", padding: "40px", minHeight: "100vh", background: "linear-gradient(160deg, #1a5c2a 0%, #2d8a3e 40%, #f5a623 100%)", color: "white" }}>
       <h1>Search Products</h1>
 
       <input
@@ -32,12 +32,14 @@ export default function SearchPage() {
         placeholder="Search for a product..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        style={{ padding: "10px", fontSize: "16px", width: "250px" }}
+        style={{ padding: "12px 20px", fontSize: "16px", width: "260px", borderRadius: "50px", border: "none", outline: "none", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}
       />
 
       <br /><br />
 
-      <button onClick={handleSearch}>Search</button>
+      <button onClick={handleSearch} style={{ padding: "12px 28px", fontSize: "16px", fontWeight: "bold", background: "linear-gradient(135deg, #f5a623, #f76b1c)", color: "white", border: "none", borderRadius: "50px", cursor: "pointer", boxShadow: "0 4px 14px rgba(247,107,28,0.4)", marginLeft: "10px" }}>
+        Search
+      </button>
 
       <br /><br />
 
@@ -76,18 +78,22 @@ export default function SearchPage() {
 
 const styles = {
   card: {
-    border: "1px solid #ddd",
+    border: "none",
     padding: "15px",
-    margin: "10px auto",
+    margin: "12px auto",
     width: "300px",
-    borderRadius: "10px",
+    borderRadius: "16px",
     cursor: "pointer",
+    background: "rgba(255,255,255,0.95)",
+    color: "#1a3a20",
+    boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+    transition: "transform 0.2s, box-shadow 0.2s",
   },
   image: {
     width: "100%",
     height: "150px",
     objectFit: "cover",
-    borderRadius: "8px",
+    borderRadius: "10px",
     marginBottom: "10px",
   },
 };

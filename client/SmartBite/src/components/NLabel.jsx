@@ -50,12 +50,14 @@ export default function NutritionLabel({ food }) {
 const styles = {
   container: {
     width: "320px",
-    border: "2px solid black",
-    padding: "12px",
-    fontFamily: "Arial, sans-serif",
+    border: "3px solid #1a5c2a",
+    borderRadius: "12px",
+    padding: "16px",
+    fontFamily: "Georgia, serif",
     backgroundColor: "white",
-    color: "black",
+    color: "#1a3a20",
     textAlign: "left",
+    boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
   },
   title: {
     fontSize: "24px",
