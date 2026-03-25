@@ -11,7 +11,7 @@ export default function Home() {
     <div style={styles.page}>
       <header style={styles.header}>
         <h1 style={{ fontSize: "3.5rem", fontWeight: "bold", letterSpacing: "2px", textShadow: "0 2px 12px rgba(0,0,0,0.3)" }}>
-          🥦 SmartBite
+          SmartBite
         </h1>
         <p style={{ fontSize: "1.1rem", opacity: 0.9, marginTop: "8px", letterSpacing: "0.5px" }}>
           Scan food. Understand your health.
