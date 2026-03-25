@@ -63,7 +63,7 @@ export default function SearchPage() {
             </div>
           ))
         ) : (
-          <p>No results yet</p>
+          <p></p>
         )}
       </div>
 
