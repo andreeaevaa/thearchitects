@@ -53,7 +53,7 @@ const styles = {
     border: "3px solid #1a5c2a",
     borderRadius: "12px",
     padding: "16px",
-    fontFamily: "Georgia, serif",
+    fontFamily: "inherit",
     backgroundColor: "white",
     color: "#1a3a20",
     textAlign: "left",

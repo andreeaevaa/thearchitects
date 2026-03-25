@@ -47,7 +47,6 @@ export default function Home() {
 
 const styles = {
   page: {
-    fontFamily: "'Georgia', serif",
     textAlign: "center",
     minHeight: "100vh",
     background: "linear-gradient(160deg, #1a5c2a 0%, #2d8a3e 40%, #f5a623 100%)",

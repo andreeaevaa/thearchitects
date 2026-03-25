@@ -106,7 +106,6 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     padding: "20px",
-    fontFamily: "Georgia, serif",
   },
   card: {
     background: "rgba(255,255,255,0.96)",

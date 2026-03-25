@@ -89,7 +89,6 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     padding: "20px",
-    fontFamily: "Georgia, serif",
   },
   card: {
     background: "rgba(255,255,255,0.96)",
@@ -128,7 +127,6 @@ const styles = {
     borderRadius: "50px",
     border: "2px solid #e0e0e0",
     outline: "none",
-    fontFamily: "Georgia, serif",
     transition: "border-color 0.2s",
   },
   btn: {
