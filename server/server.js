@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const productRoutes = require("./routes/productRoutes");
+const authRoutes = require("./routes/authRoutes")
 
 const app = express();
 
@@ -13,6 +14,7 @@ mongoose.connect("mongodb+srv://zgm5057_db_user:VNHStLAENikdbuim@foodproducts.uk
   .catch((err) => console.log(err));
 
 app.use("/api", productRoutes);
+app.use("/api/auth", authRoutes)
 
 app.get("/", (req, res) => {
   res.send("SmartBite API running");

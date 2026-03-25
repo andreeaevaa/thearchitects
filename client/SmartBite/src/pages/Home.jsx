@@ -1,10 +1,14 @@
 import { Link } from "react-router-dom";
 
+function handleLogout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("username");
+  window.location.href = "/login";
+}
+
 export default function Home() {
   return (
     <div style={styles.page}>
-      
-      {/* Header */}
       <header style={styles.header}>
         <h1 style={{ fontSize: "3.5rem", fontWeight: "bold", letterSpacing: "2px", textShadow: "0 2px 12px rgba(0,0,0,0.3)" }}>
           🥦 SmartBite
@@ -12,6 +16,9 @@ export default function Home() {
         <p style={{ fontSize: "1.1rem", opacity: 0.9, marginTop: "8px", letterSpacing: "0.5px" }}>
           Scan food. Understand your health.
         </p>
+        <button onClick={handleLogout} style={{ position: "absolute", top: "20px", right: "20px", padding: "8px 18px", background: "rgba(255,255,255,0.2)", color: "white", border: "1px solid rgba(255,255,255,0.5)", borderRadius: "50px", cursor: "pointer" }}>
+          Log out
+        </button>
       </header>
 
       {/* Hero Section */}
@@ -47,6 +54,7 @@ const styles = {
     padding: "0",
     display: "flex",
     flexDirection: "column",
+    position: "relative",
   },
 
   header: {
