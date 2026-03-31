@@ -79,8 +79,8 @@ export default function ScanPage() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        <h1 style={styles.title}>📷 Scan Product</h1>
-        <p style={styles.subtitle}>Hold a barcode up to your camera</p>
+        <h1 style={styles.title}>Scan Product</h1>
+        <p style={styles.subtitle}>Hold the barcode up to the camera</p>
 
         {/* Video feed */}
         <div style={styles.videoWrapper}>
@@ -93,7 +93,7 @@ export default function ScanPage() {
           />
           {!scanning && (
             <div style={styles.placeholder}>
-              <span style={styles.placeholderIcon}>📦</span>
+              <span style={styles.placeholderIcon}></span>
               <p style={styles.placeholderText}>Camera off</p>
             </div>
           )}
@@ -122,7 +122,7 @@ export default function ScanPage() {
           )}
         </div>
 
-        <Link to="/" style={styles.backLink}>← Back Home</Link>
+        <Link to="/" style={styles.backLink}>Back</Link>
       </div>
     </div>
   );
