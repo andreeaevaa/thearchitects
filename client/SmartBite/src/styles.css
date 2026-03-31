@@ -17,3 +17,8 @@ body {
   text-align: center;
   width: 100%;
 }
+
+@keyframes scanPulse {
+  0%, 100% { opacity: 1; transform: translateY(0px); }
+  50% { opacity: 0.5; transform: translateY(8px); }
+}
