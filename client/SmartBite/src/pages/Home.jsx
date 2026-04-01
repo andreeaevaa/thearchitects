@@ -55,13 +55,10 @@ export default function Home() {
       {/* Header */}
       <header style={styles.header}>
         <h1 style={{ fontSize: "3.5rem", fontWeight: "900", letterSpacing: "2px", textShadow: "0 2px 12px rgba(0,0,0,0.3)" }}>
-          🥦 SmartBite
+          SmartBite
         </h1>
-        <p style={{ fontSize: "1.1rem", opacity: 0.9, marginTop: "8px" }}>
-          Scan food. Understand your health.
-        </p>
         {displayName && (
-          <p style={{ fontSize: "1rem", opacity: 0.8, marginTop: "6px" }}>
+          <p style={{ fontSize: "1rem", opacity: 0.8, marginTop: "2px" }}>
             Welcome back, {displayName}!
           </p>
         )}
@@ -69,9 +66,6 @@ export default function Home() {
 
       {/* Hero */}
       <section style={styles.hero}>
-        <h2 style={{ fontSize: "2rem", marginBottom: "16px", fontWeight: "bold", textShadow: "0 2px 8px rgba(0,0,0,0.2)" }}>
-          Make Better Food Choices Instantly
-        </h2>
         <p style={{ fontSize: "1.1rem", opacity: 0.88, lineHeight: "1.7" }}>
           Scan a product barcode or search for a food to receive a personalized
           health score based on your nutrition goals.
