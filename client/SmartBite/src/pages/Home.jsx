@@ -62,7 +62,7 @@ export default function Home() {
         </p>
         {displayName && (
           <p style={{ fontSize: "1rem", opacity: 0.8, marginTop: "6px" }}>
-            Welcome back, {displayName} 👋
+            Welcome back, {displayName}!
           </p>
         )}
       </header>

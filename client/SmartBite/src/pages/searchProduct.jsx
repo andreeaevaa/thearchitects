@@ -69,8 +69,8 @@ export default function SearchPage() {
 
       <br />
 
-      <Link to="/">
-        <button style={styles.backLink}>Back Home</button>
+      <Link to="/" style={{ display: "flex", justifyContent: "center", textDecoration: "none" }}>
+        <button style={styles.button}>Home</button>
       </Link>
     </div>
   );
@@ -96,12 +96,16 @@ const styles = {
     borderRadius: "10px",
     marginBottom: "10px",
   },
-  backLink: {
-    color: "#2d8a3e",
-    textDecoration: "none",
+  button: {
+    padding: "12px 28px",
+    border: "2px solid rgba(255,255,255,0.7)",
+    borderRadius: "50px",
+    cursor: "pointer",
+    background: "rgba(255,255,255,0.15)",
+    color: "white",
+    fontSize: "15px",
     fontWeight: "bold",
-    fontSize: "0.9rem",
-    display: "block",
-    marginBottom: "24px",
+    backdropFilter: "blur(8px)",
   },
+
 };

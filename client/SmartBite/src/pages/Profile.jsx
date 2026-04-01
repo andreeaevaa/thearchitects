@@ -163,7 +163,7 @@ export default function ProfilePage() {
       <div style={styles.card}>
 
         {/* Back link */}
-        <Link to="/" style={styles.backLink}>← Back to Home</Link>
+        <Link to="/" style={styles.backLink}>Back</Link>
 
         {/* Profile picture */}
         <div style={styles.avatarSection}>
