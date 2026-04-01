@@ -1,5 +1,7 @@
 import { useLocation, Link } from "react-router-dom";
 import NutritionLabel from "../components/NLabel";
+import { calculatePersonalizedScore, getScoreColor, getScoreMessage } from "../utils/scoreUtils";
+import { useState, useEffect } from "react";
 
 export default function ProductPage() {
   const location = useLocation();
@@ -16,7 +18,27 @@ export default function ProductPage() {
     );
   }
 
-  const score = product.healthScore ?? 0;
+  const [userProfile, setUserProfile] = useState(null);
+
+useEffect(() => {
+  async function loadProfile() {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:5000/api/auth/profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.profile) setUserProfile(data.profile);
+    } catch (err) {}
+  }
+  loadProfile();
+}, []);
+
+const score = userProfile
+  ? calculatePersonalizedScore(product, userProfile)
+  : (product.healthScore ?? 0);
+
+const scoreColor = getScoreColor(score);
 
   return (
     <div style={styles.page}>
@@ -32,23 +54,14 @@ export default function ProductPage() {
           />
         </div>
 
-        {/* Health Score */}
         <div style={styles.scoreBox}>
-          <h2 style={styles.scoreTitle}>Health Score</h2>
-          <div style={styles.scoreNumber}>{score}/100</div>
-
-          <div style={styles.scaleWrapper}>
-            <div style={styles.scaleBar}></div>
-            <div
-              style={{
-                ...styles.scaleMarker,
-                left: `${score}%`,
-              }}
-            ></div>
-          </div>
-
-          <p style={styles.scoreText}>{getScoreMessage(score)}</p>
-        </div>
+  <h2 style={styles.scoreTitle}>
+    {userProfile ? "Your Personal Score" : "Health Score"}
+  </h2>
+  <div style={{ ...styles.scoreNumber, color: scoreColor }}>{score}/100</div>
+  {/* ... rest of score box unchanged ... */}
+  <p style={styles.scoreText}>{getScoreMessage(score)}</p>
+</div>
 
         {/* Nutrition Label */}
         <NutritionLabel food={product} />
@@ -68,14 +81,6 @@ export default function ProductPage() {
       </Link>
     </div>
   );
-}
-
-function getScoreMessage(score) {
-  if (score >= 80) return "Very healthy choice";
-  if (score >= 60) return "Moderately healthy";
-  if (score >= 40) return "Average nutritional quality";
-  if (score >= 20) return "Less healthy choice";
-  return "Low nutritional quality";
 }
 
 const styles = {

@@ -6,6 +6,7 @@ import Search from "./pages/searchProduct";
 import ProductPage from "./pages/productPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Profile from "./pages/Profile";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -17,7 +18,7 @@ function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-
+      <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
       <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
       <Route path="/scan" element={<PrivateRoute><Scan /></PrivateRoute>} />
       <Route path="/search" element={<PrivateRoute><Search /></PrivateRoute>} />
