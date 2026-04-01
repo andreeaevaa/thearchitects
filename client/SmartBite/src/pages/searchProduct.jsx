@@ -70,7 +70,7 @@ export default function SearchPage() {
       <br />
 
       <Link to="/">
-        <button>Back Home</button>
+        <button style={styles.backLink}>Back Home</button>
       </Link>
     </div>
   );
@@ -95,5 +95,13 @@ const styles = {
     objectFit: "cover",
     borderRadius: "10px",
     marginBottom: "10px",
+  },
+  backLink: {
+    color: "#2d8a3e",
+    textDecoration: "none",
+    fontWeight: "bold",
+    fontSize: "0.9rem",
+    display: "block",
+    marginBottom: "24px",
   },
 };

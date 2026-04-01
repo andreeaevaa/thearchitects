@@ -200,39 +200,39 @@ export default function ProfilePage() {
 
         {/* Body stats */}
         <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>📊 Body Stats</h3>
+          <h3 style={styles.sectionTitle}>Personal Stats</h3>
           <div style={styles.row}>
             <div style={styles.halfField}>
               <label style={styles.label}>Age</label>
-              <input style={styles.input} type="number" placeholder="25" value={profile.age}
+              <input style={styles.input} type="number" value={profile.age}
                 onChange={(e) => set("age", e.target.value)} />
             </div>
             <div style={styles.halfField}>
               <label style={styles.label}>Weight (lbs)</label>
-              <input style={styles.input} type="number" placeholder="160" value={profile.weight}
+              <input style={styles.input} type="number" value={profile.weight}
                 onChange={(e) => set("weight", e.target.value)} />
             </div>
           </div>
           <div style={styles.row}>
             <div style={styles.halfField}>
               <label style={styles.label}>Height (inches)</label>
-              <input style={styles.input} type="number" placeholder="68" value={profile.height}
+              <input style={styles.input} type="number" value={profile.height}
                 onChange={(e) => set("height", e.target.value)} />
             </div>
             <div style={styles.halfField}>
               <label style={styles.label}>Daily Calorie Target</label>
-              <input style={styles.input} type="number" placeholder="2000" value={profile.dailyCalorieTarget}
+              <input style={styles.input} type="number" value={profile.dailyCalorieTarget}
                 onChange={(e) => set("dailyCalorieTarget", e.target.value)} />
             </div>
           </div>
           <button style={styles.calcBtn} onClick={calculateCalories}>
-            ✨ Auto-calculate calories from my stats
+            Auto-calculate calories from my stats
           </button>
         </div>
 
         {/* Goal */}
         <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>🎯 My Goal</h3>
+          <h3 style={styles.sectionTitle}>My Goal</h3>
           <div style={styles.goalGrid}>
             {GOAL_OPTIONS.map((g) => (
               <button
