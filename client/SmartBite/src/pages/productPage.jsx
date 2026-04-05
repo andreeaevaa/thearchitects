@@ -45,7 +45,6 @@ const scoreColor = getScoreColor(score);
       <h1 style={styles.title}>{product.productName}</h1>
 
       <div style={styles.content}>
-        {/* Image */}
         <div style={styles.imageBox}>
           <img
             src={product.image}
@@ -59,7 +58,6 @@ const scoreColor = getScoreColor(score);
     {userProfile ? "Your Personal Score" : "Health Score"}
   </h2>
   <div style={{ ...styles.scoreNumber, color: scoreColor }}>{score}/100</div>
-  {/* ... rest of score box unchanged ... */}
   <p style={styles.scoreText}>{getScoreMessage(score)}</p>
 </div>
 
