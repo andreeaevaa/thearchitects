@@ -4,6 +4,8 @@ import Home from "./pages/Home";
 import Scan from "./pages/scan";
 import Search from "./pages/searchProduct";
 import ProductPage from "./pages/productPage";
+import ProductComparison from "./pages/productComparison";
+import CompareResults from "./pages/compareResults";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
@@ -23,6 +25,8 @@ function App() {
       <Route path="/scan" element={<PrivateRoute><Scan /></PrivateRoute>} />
       <Route path="/search" element={<PrivateRoute><Search /></PrivateRoute>} />
       <Route path="/product/:id" element={<PrivateRoute><ProductPage /></PrivateRoute>} />
+      <Route path="/product-comparison" element={<PrivateRoute><ProductComparison /></PrivateRoute>} />
+      <Route path="/compare" element={<PrivateRoute><CompareResults /></PrivateRoute>} />
     </Routes>
   );
 }

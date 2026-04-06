@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { BrowserMultiFormatReader } from "@zxing/browser";
+//import { BrowserMultiFormatReader } from "@zxing/browser";
 
 export default function ScanPage() {
   const videoRef = useRef(null);

@@ -32,12 +32,44 @@ export default function ProductPage() {
   let statusText = "Great Choice!";
 
   if (score < 40) {
-    boxColor = "#ff4d4d"; 
+    boxColor = "#ff4d4d";
     statusText = "Poor Choice";
   } else if (score < 70) {
-    boxColor = "#ffcc00"; 
+    boxColor = "#ffcc00";
     statusText = "Moderate Choice";
   }
+
+  function getHealthTags(product) {
+    const tags = [];
+    const ingredientsText = (product.ingredients || []).join(" ").toLowerCase();
+    const carbs = product.nutrition?.carbs ?? Infinity;
+    const sugar = product.nutrition?.sugar ?? Infinity;
+    const sodium = product.nutrition?.sodium ?? Infinity;
+    const protein = product.nutrition?.protein ?? 0;
+
+    if (ingredientsText && !/(wheat|barley|rye|spelt|triticale|oats|malt|semolina|durum)/.test(ingredientsText)) {
+      tags.push("Gluten Free");
+    }
+    if (carbs <= 5 && sugar <= 5) {
+      tags.push("Keto-Friendly");
+    }
+    if (protein >= 8) {
+      tags.push("High protein");
+    }
+    if (sugar <= 5) {
+      tags.push("Low sugar");
+    }
+    if (sodium <= 140) {
+      tags.push("Low sodium");
+    }
+    if (carbs <= 15 && carbs > 5) {
+      tags.push("Low carbs");
+    }
+
+    return [...new Set(tags)];
+  }
+
+  const healthTags = getHealthTags(product);
 
   return (
     <div style={styles.page}>
@@ -68,7 +100,16 @@ export default function ProductPage() {
       {/* Ingredients Section */}
       <div style={styles.ingredientsBox}>
         <h3>Ingredients</h3>
-        <p>{product.ingredients?.join(", ") || "Ingredients not listed."}</p>
+        <p>{product.ingredients?.length ? product.ingredients.join(", ") : "Ingredients not listed."}</p>
+        <div style={styles.tagRow}>
+          {healthTags.length > 0 ? (
+            healthTags.map((tag) => (
+              <span key={tag} style={styles.tagBadge}>{tag}</span>
+            ))
+          ) : (
+            <span style={styles.tagBadge}>No health tags available</span>
+          )}
+        </div>
       </div>
 
       <Link to="/search">
@@ -101,5 +142,7 @@ const styles = {
   progressContainer: { width: "100%", height: "8px", background: "rgba(255,255,255,0.2)", borderRadius: "10px", marginTop: "20px", position: "relative" },
   progressBar: { position: "absolute", top: "-4px", width: "4px", height: "16px", background: "white", borderRadius: "2px" },
   ingredientsBox: { width: "800px", maxWidth: "90%", margin: "0 auto 40px", padding: "25px", background: "rgba(255,255,255,0.1)", borderRadius: "15px", textAlign: "left" },
+  tagRow: { display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "16px" },
+  tagBadge: { display: "inline-flex", alignItems: "center", padding: "8px 14px", borderRadius: "999px", background: "rgba(255,255,255,0.18)", color: "white", fontSize: "0.9rem", fontWeight: "700" },
   button: { padding: "14px 40px", borderRadius: "50px", border: "2px solid white", background: "transparent", color: "white", cursor: "pointer", fontWeight: "bold", fontSize: "16px" }
 };

@@ -20,7 +20,7 @@ scannerSubject.subscribe((product) => {
 
 app.set("scannerSubject", scannerSubject);
 
-const db = require("./utils/database");
+const db = require("./utils/singletonDatabase.js");
 db.connect("mongodb+srv://zgm5057_db_user:VNHStLAENikdbuim@foodproducts.ukcgr3l.mongodb.net/SmartBite")
   .catch((err) => console.log(err));
 

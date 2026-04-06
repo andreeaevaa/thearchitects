@@ -5,7 +5,9 @@ export default function Home() {
   const navigate = useNavigate();
   const [profilePic, setProfilePic] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [comparisonHistory, setComparisonHistory] = useState([]);
   const username = localStorage.getItem("username") || "";
+  const HISTORY_KEY = "comparisonHistory";
 
   useEffect(() => {
     async function loadProfile() {
@@ -22,6 +24,17 @@ export default function Home() {
       } catch (err) {}
     }
     loadProfile();
+  }, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(HISTORY_KEY);
+    if (saved) {
+      try {
+        setComparisonHistory(JSON.parse(saved));
+      } catch (err) {
+        setComparisonHistory([]);
+      }
+    }
   }, []);
 
   function handleLogout() {
@@ -78,7 +91,47 @@ export default function Home() {
           <Link to="/search">
             <button style={styles.secondaryBtn}>Search Products</button>
           </Link>
+          <Link to="/product-comparison">
+            <button style={styles.cmprsonPrimaryBtn}>Compare Products</button>
+          </Link>
         </div>
+      </section>
+
+      <section style={styles.historySection}>
+        <div style={styles.historyHeader}>
+          <div>
+            <h2 style={styles.historyTitle}>Comparison History</h2>
+            <p style={styles.historySubtext}>
+              Reopen a past comparison and review the health ratings again.
+            </p>
+          </div>
+          <Link to="/product-comparison" style={styles.historyAction}>
+            New Comparison
+          </Link>
+        </div>
+
+        {comparisonHistory.length > 0 ? (
+          <div style={styles.historyList}>
+            {comparisonHistory.map((entry) => (
+              <button
+                key={entry.key}
+                style={styles.historyCard}
+                onClick={() => navigate(`/compare?ids=${entry.ids.join(",")}`)}
+              >
+                <div>
+                  <strong>{entry.names[0]}</strong>
+                  <span style={styles.historySeparator}>vs</span>
+                  <strong>{entry.names[1]}</strong>
+                </div>
+                <div style={styles.historyDate}>
+                  {new Date(entry.date).toLocaleString()}
+                </div>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p style={styles.noHistory}>You haven’t run a comparison yet.</p>
+        )}
       </section>
     </div>
   );
@@ -157,7 +210,7 @@ const styles = {
     padding: "14px 32px",
     fontSize: "16px",
     fontWeight: "bold",
-    background: "linear-gradient(135deg, #f5a623 0%, #f76b1c 100%)",
+    background: "linear-gradient(135deg, #f2a13d 0%, #e4600d 100%)",
     color: "white",
     border: "none",
     borderRadius: "50px",
@@ -167,6 +220,22 @@ const styles = {
     textTransform: "uppercase",
     fontFamily: "Lato, sans-serif",
   },
+
+  cmprsonPrimaryBtn: {
+     padding: "14px 32px",
+    fontSize: "16px",
+    fontWeight: "bold",
+    background: "linear-gradient(135deg, #f23dc5 0%, #821177 100%)",
+    color: "white",
+    border: "none",
+    borderRadius: "50px",
+    cursor: "pointer",
+    boxShadow: "0 6px 20px rgba(247,107,28,0.4)",
+    letterSpacing: "0.5px",
+    textTransform: "uppercase",
+    fontFamily: "Lato, sans-serif",
+  },
+
   secondaryBtn: {
     padding: "14px 32px",
     fontSize: "16px",
@@ -180,5 +249,74 @@ const styles = {
     letterSpacing: "0.5px",
     textTransform: "uppercase",
     fontFamily: "Lato, sans-serif",
+  },
+  historySection: {
+    maxWidth: "900px",
+    margin: "0 auto 50px auto",
+    padding: "24px 20px 32px",
+    background: "rgba(255,255,255,0.08)",
+    borderRadius: "24px",
+    boxShadow: "0 12px 40px rgba(0,0,0,0.2)",
+  },
+  historyHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "16px",
+    flexWrap: "wrap",
+    marginBottom: "20px",
+  },
+  historyTitle: {
+    margin: 0,
+    fontSize: "1.4rem",
+    fontWeight: 700,
+  },
+  historySubtext: {
+    margin: "8px 0 0",
+    opacity: 0.85,
+    maxWidth: "560px",
+    lineHeight: 1.6,
+  },
+  historyAction: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "12px 26px",
+    borderRadius: "999px",
+    background: "rgba(255,255,255,0.16)",
+    color: "white",
+    textDecoration: "none",
+    border: "1px solid rgba(255,255,255,0.35)",
+    fontWeight: 700,
+  },
+  historyList: {
+    display: "grid",
+    gap: "14px",
+  },
+  historyCard: {
+    width: "100%",
+    textAlign: "left",
+    padding: "18px 22px",
+    borderRadius: "18px",
+    background: "rgba(255,255,255,0.12)",
+    border: "1px solid rgba(255,255,255,0.18)",
+    color: "white",
+    cursor: "pointer",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "12px",
+  },
+  historySeparator: {
+    margin: "0 10px",
+    opacity: 0.7,
+  },
+  historyDate: {
+    opacity: 0.75,
+    fontSize: "0.9rem",
+  },
+  noHistory: {
+    opacity: 0.9,
+    marginTop: "12px",
   },
 };
