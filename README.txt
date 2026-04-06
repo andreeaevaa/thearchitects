@@ -24,6 +24,10 @@ setup:
 
 Isabelle Toni Design Pattern Implementations
 
-For the object oriented design Pattern I chose Factory Method.
+For the object oriented design Pattern I chose Factory Method. In this project,
+the Factory Method is used to generate product objects based on incoming data, keeping object creation flexible and scalable.
+Implementation: Located in server/utils/productFactory.js.
 
-For the UI design method I chose , Infinite Scroll
+For the UI design method I chose , Infinite Scroll. This pattern enhances user experience by dynamically loading additional products as the user scrolls,
+rather than requiring pagination or manual input.
+Implementation: Located in client/src/pages/searchProduct.jsx.

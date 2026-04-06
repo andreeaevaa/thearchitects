@@ -35,3 +35,13 @@ app.get("/", (req, res) => {
 app.listen(5000, () => {
   console.log("Server running on port 5000");
 });
+
+const { createProduct } = require('./utils/productFactory');
+
+app.get('/product', (req, res) => {
+  const data = getProductFromAPI();
+
+  const product = createProduct("scored", data);
+
+  res.json(product);
+});
