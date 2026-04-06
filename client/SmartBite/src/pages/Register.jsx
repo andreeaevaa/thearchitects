@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
+function getStrength(pwd) {
+  if (pwd.length === 0) return null;
+  if (pwd.length < 6) return { label: "Too short", color: "#d62828", width: "20%" };
+  if (pwd.length < 8) return { label: "Weak", color: "#f77f00", width: "40%" };
+  if (/[A-Z]/.test(pwd) && /[0-9]/.test(pwd)) return { label: "Strong", color: "#2d8a3e", width: "100%" };
+  return { label: "Fair", color: "#f5a623", width: "65%" };
+}
+
 export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -70,6 +78,17 @@ export default function Register() {
             style={styles.input}
             autoComplete="new-password"
           />
+          {(() => {
+          const s = getStrength(password);
+          return s ? (
+          <div style={{ textAlign: "left", paddingLeft: "8px" }}>
+          <div style={{ background: "#eee", borderRadius: "50px", height: "6px" }}>
+          <div style={{ width: s.width, background: s.color, height: "6px", borderRadius: "50px", transition: "width 0.3s" }} />
+          </div>
+          <p style={{ fontSize: "12px", color: s.color, marginTop: "4px" }}>{s.label}</p>
+          </div>
+          ) : null;
+          })()}
           <input
             type="password"
             placeholder="Confirm password"

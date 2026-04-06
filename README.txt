@@ -22,6 +22,7 @@ setup:
 1. **Backend:** `cd server && node server.js`
 2. **Frontend:** `cd client && npm run dev`
 
+
 Isabelle Toni Design Pattern Implementations
 
 For the object oriented design Pattern I chose Factory Method. In this project,
@@ -31,3 +32,16 @@ Implementation: Located in server/utils/productFactory.js.
 For the UI design method I chose , Infinite Scroll. This pattern enhances user experience by dynamically loading additional products as the user scrolls,
 rather than requiring pagination or manual input.
 Implementation: Located in client/src/pages/searchProduct.jsx.
+
+
+James Jacobs Design Pattern Implementations
+
+For the objected oriented design pattern, I chose Singleton.
+A Singleton makes sure that only one instance of a class is ever created while the application is live.
+I applied this design pattern directly to the MongoDB database connection
+Implementation: Located in server/utils/singletonDatabase.js as well as small code tweak in server/server.js
+
+For the UI design pattern, I implemented a Password Strength Meter (I had to change from my intial choice, as we changed some workings of our project)
+This simply adds as it says, a password strength meter underneath the sign up field to help better protect the user from potential hacks
+Implementation: Located in client/src/pages/Register.jsx
+
