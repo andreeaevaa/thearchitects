@@ -21,3 +21,9 @@ Visual logic: The UI dynamically changes its color scheme (Red/Yellow/Green) bas
 setup:
 1. **Backend:** `cd server && node server.js`
 2. **Frontend:** `cd client && npm run dev`
+
+Isabelle Toni Design Pattern Implementations
+
+For the object oriented design Pattern I chose Factory Method.
+
+For the UI design method I chose , Infinite Scroll
