@@ -33,6 +33,7 @@ For the UI design method I chose , Infinite Scroll. This pattern enhances user e
 rather than requiring pagination or manual input.
 Implementation: Located in client/src/pages/searchProduct.jsx.
 
+<<<<<<< Updated upstream
 
 James Jacobs Design Pattern Implementations
 
@@ -45,3 +46,16 @@ For the UI design pattern, I implemented a Password Strength Meter (I had to cha
 This simply adds as it says, a password strength meter underneath the sign up field to help better protect the user from potential hacks
 Implementation: Located in client/src/pages/Register.jsx
 
+=======
+Eden De La Cruz Design Pattern Implementations
+
+For the object oriented design Pattern I chose the memento pattern. In this project, every time the user makes a comparison
+between two products, it is saved within the application on the Home page so the user can
+click on a comparison in a "Recent Comparison History" tab and retrieve the comparison results.
+Implemented in pages > Home.jsx. 
+
+For the UI design method I chose tagging. This UI design method allows the user to quickly view the overall qualities
+of a product without having to read through the numbers, allowing quick scanning. 
+
+Implemented in pages > productPage.jsx.
+>>>>>>> Stashed changes
