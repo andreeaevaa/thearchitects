@@ -1,5 +1,4 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const productRoutes = require("./routes/productRoutes");
 const authRoutes = require("./routes/authRoutes");
@@ -21,8 +20,8 @@ scannerSubject.subscribe((product) => {
 
 app.set("scannerSubject", scannerSubject);
 
-mongoose.connect("mongodb+srv://zgm5057_db_user:VNHStLAENikdbuim@foodproducts.ukcgr3l.mongodb.net/SmartBite")
-  .then(() => console.log("Connected to MongoDB"))
+const db = require("./utils/database");
+db.connect("mongodb+srv://zgm5057_db_user:VNHStLAENikdbuim@foodproducts.ukcgr3l.mongodb.net/SmartBite")
   .catch((err) => console.log(err));
 
 app.use("/api", productRoutes);
