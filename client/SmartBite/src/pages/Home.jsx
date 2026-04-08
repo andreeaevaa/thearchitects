@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import "../components/ProductCard.css";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -44,279 +45,298 @@ export default function Home() {
   }
 
   return (
-    <div style={styles.page}>
+    <div style={s.page}>
 
-      {/* Top bar */}
-      <div style={styles.topBar}>
-        {/* Profile icon — top left */}
-        <Link to="/profile" style={styles.profileLink}>
+      {/* ── Top bar ── */}
+      <div style={s.topBar}>
+        <Link to="/profile" style={{ textDecoration: "none" }}>
           {profilePic ? (
-            <img src={profilePic} alt="Profile" style={styles.profileImg} />
+            <img src={profilePic} alt="Profile" style={s.profileImg} />
           ) : (
-            <div style={styles.profilePlaceholder}>
+            <div style={s.profilePlaceholder}>
               {username.charAt(0).toUpperCase()}
             </div>
           )}
         </Link>
-
-        {/* Logout — top right */}
-        <button onClick={handleLogout} style={styles.logoutBtn}>
-          Log out
-        </button>
+        <button onClick={handleLogout} style={s.logoutBtn}>Log out</button>
       </div>
 
-      {/* Header */}
-      <header style={styles.header}>
-        <h1 style={{ fontSize: "3.5rem", fontWeight: "900", letterSpacing: "2px", textShadow: "0 2px 12px rgba(0,0,0,0.3)" }}>
-          SmartBite
-        </h1>
+      {/* ── Hero ── */}
+      <section style={s.hero}>
+        <div style={s.logoMark}>SB</div>
+        <h1 style={s.title}>SmartBite</h1>
         {displayName && (
-          <p style={{ fontSize: "1rem", opacity: 0.8, marginTop: "2px" }}>
-            Welcome back, {displayName}!
-          </p>
+          <p style={s.welcome}>Welcome back, {displayName}!</p>
         )}
-      </header>
-
-      {/* Hero */}
-      <section style={styles.hero}>
-        <p style={{ fontSize: "1.1rem", opacity: 0.88, lineHeight: "1.7" }}>
+        <p style={s.tagline}>
           Scan a product barcode or search for a food to receive a personalized
           health score based on your nutrition goals.
         </p>
 
-        <div style={styles.buttons}>
+        <div style={s.buttons}>
           <Link to="/scan">
-            <button style={styles.primaryBtn}>Scan Product</button>
+            <button style={s.btnPrimary}>
+              <span style={s.btnIcon}>⬡</span> Scan Product
+            </button>
           </Link>
           <Link to="/search">
-            <button style={styles.secondaryBtn}>Search Products</button>
+            <button style={s.btnSecondary}>Search Products</button>
           </Link>
           <Link to="/product-comparison">
-            <button style={styles.cmprsonPrimaryBtn}>Compare Products</button>
+            <button style={s.btnSecondary}>Compare Products</button>
           </Link>
         </div>
       </section>
 
-      <section style={styles.historySection}>
-        <div style={styles.historyHeader}>
-          <div>
-            <h2 style={styles.historyTitle}>Comparison History</h2>
-            <p style={styles.historySubtext}>
+      {/* ── Comparison History ── */}
+      <section style={s.historyCard}>
+        <div style={s.historyHeader}>
+          <div style={{ textAlign: "left" }}>
+            <h2 style={s.historyTitle}>Comparison History</h2>
+            <p style={s.historySubtext}>
               Reopen a past comparison and review the health ratings again.
             </p>
           </div>
-          <Link to="/product-comparison" style={styles.historyAction}>
+          <Link to="/product-comparison" style={s.newCompBtn}>
             New Comparison
           </Link>
         </div>
 
         {comparisonHistory.length > 0 ? (
-          <div style={styles.historyList}>
+          <div style={s.historyList}>
             {comparisonHistory.map((entry) => (
               <button
                 key={entry.key}
-                style={styles.historyCard}
+                style={s.historyRow}
                 onClick={() => navigate(`/compare?ids=${entry.ids.join(",")}`)}
               >
-                <div>
-                  <strong>{entry.names[0]}</strong>
-                  <span style={styles.historySeparator}>vs</span>
-                  <strong>{entry.names[1]}</strong>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <strong style={{ color: "#1a1a1a" }}>{entry.names[0]}</strong>
+                  <span style={s.vs}>vs</span>
+                  <strong style={{ color: "#1a1a1a" }}>{entry.names[1]}</strong>
                 </div>
-                <div style={styles.historyDate}>
+                <span style={s.historyDate}>
                   {new Date(entry.date).toLocaleString()}
-                </div>
+                </span>
               </button>
             ))}
           </div>
         ) : (
-          <p style={styles.noHistory}>You haven’t run a comparison yet.</p>
+          <p style={s.noHistory}>You haven't run a comparison yet.</p>
         )}
       </section>
+
     </div>
   );
 }
 
-const styles = {
+const s = {
   page: {
-    fontFamily: "Lato, sans-serif",
-    textAlign: "center",
+    fontFamily: "'DM Sans', sans-serif",
     minHeight: "100vh",
-    background: "linear-gradient(160deg, #1a5c2a 0%, #2d8a3e 40%, #f5a623 100%)",
+    background: "#edf2ee",
     display: "flex",
     flexDirection: "column",
-    color: "white",
-    position: "relative",
+    alignItems: "center",
+    padding: "0 0 60px",
+    color: "#1a1a1a",
   },
+
+  /* top bar */
   topBar: {
+    width: "100%",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "16px 24px",
-  },
-  profileLink: {
-    textDecoration: "none",
+    padding: "20px 40px",
   },
   profileImg: {
-    width: "48px",
-    height: "48px",
+    width: 48, height: 48,
     borderRadius: "50%",
     objectFit: "cover",
-    border: "3px solid rgba(255,255,255,0.8)",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+    border: "3px solid #2d6a4f",
     display: "block",
   },
   profilePlaceholder: {
-    width: "48px",
-    height: "48px",
+    width: 48, height: 48,
     borderRadius: "50%",
-    background: "rgba(255,255,255,0.25)",
-    border: "3px solid rgba(255,255,255,0.8)",
+    background: "#2d6a4f",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "1.3rem",
-    fontWeight: "900",
-    color: "white",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+    fontSize: "1.2rem",
+    fontWeight: 700,
+    color: "#fff",
   },
   logoutBtn: {
-    padding: "8px 18px",
-    background: "rgba(255,255,255,0.2)",
-    color: "white",
-    border: "1px solid rgba(255,255,255,0.5)",
-    borderRadius: "50px",
+    padding: "9px 22px",
+    background: "#fff",
+    color: "#2d6a4f",
+    border: "2px solid #2d6a4f",
+    borderRadius: 50,
     cursor: "pointer",
-    fontWeight: "700",
-    fontSize: "13px",
-    fontFamily: "Lato, sans-serif",
+    fontWeight: 700,
+    fontSize: 14,
+    fontFamily: "'DM Sans', sans-serif",
+    transition: "background 0.2s, color 0.2s",
   },
-  header: {
-    padding: "20px 40px 10px",
-  },
+
+  /* hero */
   hero: {
-    maxWidth: "640px",
-    margin: "40px auto 50px auto",
-    padding: "0 20px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    textAlign: "center",
+    padding: "60px 24px 48px",
+    maxWidth: 700,
+    width: "100%",
+  },
+  logoMark: {
+    width: 72, height: 72,
+    borderRadius: "50%",
+    background: "linear-gradient(160deg, #3e8560, #1e4f3a)",
+    color: "#fff",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 22,
+    fontWeight: 700,
+    letterSpacing: 1,
+    marginBottom: 20,
+    boxShadow: "0 8px 28px rgba(45,106,79,0.35)",
+  },
+  title: {
+    fontFamily: "'DM Serif Display', serif",
+    fontSize: "clamp(2.6rem, 6vw, 4rem)",
+    fontWeight: 400,
+    color: "#1a1a1a",
+    margin: "0 0 10px",
+    lineHeight: 1.1,
+  },
+  welcome: {
+    fontSize: 16,
+    color: "#2d6a4f",
+    fontWeight: 600,
+    margin: "0 0 16px",
+  },
+  tagline: {
+    fontSize: 17,
+    color: "#666",
+    lineHeight: 1.75,
+    margin: "0 0 36px",
+    maxWidth: 520,
   },
   buttons: {
-    marginTop: "32px",
     display: "flex",
     justifyContent: "center",
-    gap: "16px",
+    gap: 14,
     flexWrap: "wrap",
   },
-  primaryBtn: {
+  btnPrimary: {
     padding: "14px 32px",
-    fontSize: "16px",
-    fontWeight: "bold",
-    background: "linear-gradient(135deg, #f2a13d 0%, #e4600d 100%)",
-    color: "white",
+    fontSize: 15,
+    fontWeight: 700,
+    background: "linear-gradient(160deg, #3e8560, #1e4f3a)",
+    color: "#fff",
     border: "none",
-    borderRadius: "50px",
+    borderRadius: 50,
     cursor: "pointer",
-    boxShadow: "0 6px 20px rgba(247,107,28,0.4)",
-    letterSpacing: "0.5px",
-    textTransform: "uppercase",
-    fontFamily: "Lato, sans-serif",
+    fontFamily: "'DM Sans', sans-serif",
+    boxShadow: "0 6px 20px rgba(45,106,79,0.35)",
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    letterSpacing: 0.3,
+  },
+  btnIcon: {
+    fontSize: 16,
+  },
+  btnSecondary: {
+    padding: "14px 32px",
+    fontSize: 15,
+    fontWeight: 700,
+    background: "#fff",
+    color: "#2d6a4f",
+    border: "2px solid #2d6a4f",
+    borderRadius: 50,
+    cursor: "pointer",
+    fontFamily: "'DM Sans', sans-serif",
+    letterSpacing: 0.3,
   },
 
-  cmprsonPrimaryBtn: {
-     padding: "14px 32px",
-    fontSize: "16px",
-    fontWeight: "bold",
-    background: "linear-gradient(135deg, #f23dc5 0%, #821177 100%)",
-    color: "white",
-    border: "none",
-    borderRadius: "50px",
-    cursor: "pointer",
-    boxShadow: "0 6px 20px rgba(247,107,28,0.4)",
-    letterSpacing: "0.5px",
-    textTransform: "uppercase",
-    fontFamily: "Lato, sans-serif",
-  },
-
-  secondaryBtn: {
-    padding: "14px 32px",
-    fontSize: "16px",
-    fontWeight: "bold",
-    background: "rgba(255,255,255,0.2)",
-    backdropFilter: "blur(8px)",
-    color: "white",
-    border: "2px solid rgba(255,255,255,0.6)",
-    borderRadius: "50px",
-    cursor: "pointer",
-    letterSpacing: "0.5px",
-    textTransform: "uppercase",
-    fontFamily: "Lato, sans-serif",
-  },
-  historySection: {
-    maxWidth: "900px",
-    margin: "0 auto 50px auto",
-    padding: "24px 20px 32px",
-    background: "rgba(255,255,255,0.08)",
-    borderRadius: "24px",
-    boxShadow: "0 12px 40px rgba(0,0,0,0.2)",
+  /* history */
+  historyCard: {
+    width: "calc(100% - 80px)",
+    maxWidth: 900,
+    background: "#fff",
+    borderRadius: 28,
+    padding: "36px 44px",
+    boxShadow: "0 6px 28px rgba(0,0,0,0.07)",
   },
   historyHeader: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    gap: "16px",
+    gap: 16,
     flexWrap: "wrap",
-    marginBottom: "20px",
+    marginBottom: 24,
   },
   historyTitle: {
-    margin: 0,
-    fontSize: "1.4rem",
-    fontWeight: 700,
+    fontFamily: "'DM Serif Display', serif",
+    fontSize: 24,
+    fontWeight: 400,
+    color: "#1a1a1a",
+    margin: "0 0 6px",
   },
   historySubtext: {
-    margin: "8px 0 0",
-    opacity: 0.85,
-    maxWidth: "560px",
+    fontSize: 14,
+    color: "#888",
+    margin: 0,
     lineHeight: 1.6,
   },
-  historyAction: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "12px 26px",
-    borderRadius: "999px",
-    background: "rgba(255,255,255,0.16)",
-    color: "white",
+  newCompBtn: {
+    padding: "12px 28px",
+    borderRadius: 999,
+    background: "#eef7f1",
+    color: "#2d6a4f",
     textDecoration: "none",
-    border: "1px solid rgba(255,255,255,0.35)",
     fontWeight: 700,
+    fontSize: 14,
+    border: "2px solid #2d6a4f",
+    whiteSpace: "nowrap",
+    fontFamily: "'DM Sans', sans-serif",
   },
   historyList: {
     display: "grid",
-    gap: "14px",
+    gap: 10,
   },
-  historyCard: {
+  historyRow: {
     width: "100%",
     textAlign: "left",
-    padding: "18px 22px",
-    borderRadius: "18px",
-    background: "rgba(255,255,255,0.12)",
-    border: "1px solid rgba(255,255,255,0.18)",
-    color: "white",
+    padding: "16px 20px",
+    borderRadius: 14,
+    background: "#f7f9f8",
+    border: "1px solid #e4ede8",
     cursor: "pointer",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    gap: "12px",
+    gap: 12,
+    fontFamily: "'DM Sans', sans-serif",
   },
-  historySeparator: {
-    margin: "0 10px",
-    opacity: 0.7,
+  vs: {
+    color: "#bbb",
+    fontSize: 13,
+    fontWeight: 500,
   },
   historyDate: {
-    opacity: 0.75,
-    fontSize: "0.9rem",
+    color: "#aaa",
+    fontSize: 13,
+    whiteSpace: "nowrap",
   },
   noHistory: {
-    opacity: 0.9,
-    marginTop: "12px",
+    color: "#aaa",
+    fontSize: 15,
+    marginTop: 8,
   },
 };

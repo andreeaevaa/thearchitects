@@ -1,0 +1,316 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+* { box-sizing: border-box; }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+body {
+  margin: 0;
+  background: #edf2ee;
+}
+
+.pc-page {
+  min-height: 100vh;
+  background: #edf2ee;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 32px 40px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ── Main card — full width ── */
+.pc-card {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  min-height: 520px;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.13);
+  background: #fff;
+  margin-bottom: 28px;
+}
+
+/* ── Sidebar ── */
+.pc-sidebar {
+  width: 28%;
+  background: linear-gradient(160deg, #3e8560 0%, #1e4f3a 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 80px 28px 48px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pc-brand-badge {
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 7px 20px;
+  border-radius: 20px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.pc-image-circle {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.pc-image-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.pc-sidebar-text { text-align: center; }
+
+.pc-sidebar-name {
+  color: #fff;
+  font-weight: 700;
+  font-size: 20px;
+  margin: 0 0 8px;
+  line-height: 1.35;
+}
+
+.pc-sidebar-sub {
+  color: rgba(255,255,255,0.6);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* ── Right panel ── */
+.pc-panel {
+  flex: 1;
+  padding: 48px 56px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  overflow-y: auto;
+}
+
+/* ── Header ── */
+.pc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  gap: 24px;
+}
+
+.pc-product-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 40px;
+  font-weight: 400;
+  color: #111;
+  margin: 0 0 10px;
+  line-height: 1.15;
+}
+
+.pc-subtitle {
+  font-size: 15px;
+  color: #bbb;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+/* Score ring */
+.pc-score-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pc-score-ring { width: 110px; height: 110px; }
+
+.pc-score-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.pc-score-label.great    { color: #2d6a4f; }
+.pc-score-label.moderate { color: #b07d00; }
+.pc-score-label.poor     { color: #c0392b; }
+
+/* Divider */
+.pc-divider {
+  height: 1px;
+  background: #efefef;
+  margin-bottom: 24px;
+}
+
+/* Nutrition header */
+.pc-nf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 16px;
+}
+
+.pc-nf-title   { font-size: 22px; font-weight: 700; color: #111; }
+.pc-nf-serving { font-size: 13px; color: #ccc; }
+
+/* Calories */
+.pc-calories-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #eef7f1;
+  border-radius: 14px;
+  padding: 18px 24px;
+  margin-bottom: 14px;
+}
+
+.pc-cal-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  color: #2d6a4f;
+  text-transform: uppercase;
+}
+
+.pc-cal-value { font-size: 34px; font-weight: 700; color: #2d6a4f; }
+.pc-cal-unit  { font-size: 16px; font-weight: 500; }
+
+/* Nutrient grid */
+.pc-nutrient-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.pc-nutrient-cell {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #efefef;
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+
+.pc-nutrient-cell.empty { border-color: transparent; background: transparent; }
+
+.pc-nutrient-name  { font-size: 15px; color: #888; }
+.pc-nutrient-value { font-size: 16px; font-weight: 700; color: #111; }
+
+/* Protein */
+.pc-protein-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f7f9f8;
+  border-radius: 14px;
+  padding: 18px 24px;
+  border: 1px solid #e4ede8;
+}
+
+.pc-protein-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.pc-protein-value { font-size: 34px; font-weight: 700; color: #2d6a4f; }
+
+/* ── Ingredients card ── */
+.pc-ingredients-card {
+  width: 100%;
+  background: #fff;
+  border-radius: 28px;
+  padding: 40px 56px;
+  box-shadow: 0 6px 28px rgba(0,0,0,0.07);
+  margin-bottom: 28px;
+  text-align: left;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.pc-ingredients-card h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  font-weight: 400;
+  color: #111;
+  margin: 0 0 14px;
+}
+
+.pc-ingredients-card p {
+  font-size: 15px;
+  color: #777;
+  line-height: 1.8;
+  margin: 0 0 20px;
+}
+
+.pc-tag-row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.pc-tag {
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: #eef7f1;
+  color: #2d6a4f;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ── Back button ── */
+.pc-back-btn {
+  align-self: center;
+  padding: 16px 52px;
+  border-radius: 50px;
+  border: 2px solid #2d6a4f;
+  background: transparent;
+  color: #2d6a4f;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s, color 0.2s;
+}
+
+.pc-back-btn:hover { background: #2d6a4f; color: #fff; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .pc-page { padding: 20px 16px; }
+  .pc-card { flex-direction: column; min-height: unset; }
+  .pc-sidebar {
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 24px 20px;
+    gap: 18px;
+  }
+  .pc-brand-badge { top: 12px; left: 16px; transform: none; }
+  .pc-image-circle { width: 90px; height: 90px; flex-shrink: 0; }
+  .pc-sidebar-text { text-align: left; }
+  .pc-panel { padding: 28px 24px; }
+  .pc-product-name { font-size: 26px; }
+  .pc-ingredients-card { padding: 28px 24px; }
+}

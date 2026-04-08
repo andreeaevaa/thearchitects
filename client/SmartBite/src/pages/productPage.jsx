@@ -1,16 +1,37 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import NutritionLabel from "../components/NLabel"; 
+import { useParams, Link, useNavigate } from "react-router-dom";
+import "../components/ProductCard.css";
+
+function getHealthTags(product) {
+  const tags = [];
+  const ingredientsText = (product.ingredients || []).join(" ").toLowerCase();
+  const carbs   = product.nutrition?.carbs  ?? Infinity;
+  const sugar   = product.nutrition?.sugar  ?? Infinity;
+  const sodium  = product.nutrition?.sodium ?? Infinity;
+  const protein = product.nutrition?.protein ?? 0;
+
+  if (ingredientsText && !/(wheat|barley|rye|spelt|triticale|oats|malt|semolina|durum)/.test(ingredientsText)) {
+    tags.push("Gluten Free");
+  }
+  if (carbs <= 5 && sugar <= 5) tags.push("Keto-Friendly");
+  if (protein >= 8)             tags.push("High Protein");
+  if (sugar <= 5)               tags.push("Low Sugar");
+  if (sodium <= 140)            tags.push("Low Sodium");
+  if (carbs <= 15 && carbs > 5) tags.push("Low Carbs");
+
+  return [...new Set(tags)];
+}
+
 export default function ProductPage() {
-  const { id } = useParams(); 
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
     async function fetchProduct() {
       try {
-        const res = await fetch(`http://localhost:5000/api/products/${id}`);
+        const res  = await fetch(`http://localhost:5000/api/products/${id}`);
         const data = await res.json();
         setProduct(data);
         setLoading(false);
@@ -22,127 +43,164 @@ export default function ProductPage() {
     if (id) fetchProduct();
   }, [id]);
 
-  if (loading) return <div style={styles.loading}>Loading Health Data...</div>;
-  if (!product) return <div style={styles.loading}>Product not found. <Link to="/search">Back</Link></div>;
+  if (loading)  return <div className="pc-page" style={{ color: "#2d6a4f", fontSize: 22, justifyContent: "center", alignItems: "center" }}>Loading...</div>;
+  if (!product) return <div className="pc-page" style={{ color: "#2d6a4f", fontSize: 22, justifyContent: "center", alignItems: "center" }}>Product not found. <Link to="/search">Back</Link></div>;
 
+  const score     = product.healthScore || 0;
+  const nutrition = product.nutrition   || {};
 
-  const score = product.healthScore || 0; 
-  
-  let boxColor = "#2eb82e"; 
-  let statusText = "Great Choice!";
+  // Score ring (110px viewBox, radius 42)
+  const radius        = 42;
+  const circumference = 2 * Math.PI * radius;
+  const offset        = circumference - (score / 100) * circumference;
 
-  if (score < 40) {
-    boxColor = "#ff4d4d";
-    statusText = "Poor Choice";
-  } else if (score < 70) {
-    boxColor = "#ffcc00";
-    statusText = "Moderate Choice";
-  }
-
-  function getHealthTags(product) {
-    const tags = [];
-    const ingredientsText = (product.ingredients || []).join(" ").toLowerCase();
-    const carbs = product.nutrition?.carbs ?? Infinity;
-    const sugar = product.nutrition?.sugar ?? Infinity;
-    const sodium = product.nutrition?.sodium ?? Infinity;
-    const protein = product.nutrition?.protein ?? 0;
-
-    if (ingredientsText && !/(wheat|barley|rye|spelt|triticale|oats|malt|semolina|durum)/.test(ingredientsText)) {
-      tags.push("Gluten Free");
-    }
-    if (carbs <= 5 && sugar <= 5) {
-      tags.push("Keto-Friendly");
-    }
-    if (protein >= 8) {
-      tags.push("High protein");
-    }
-    if (sugar <= 5) {
-      tags.push("Low sugar");
-    }
-    if (sodium <= 140) {
-      tags.push("Low sodium");
-    }
-    if (carbs <= 15 && carbs > 5) {
-      tags.push("Low carbs");
-    }
-
-    return [...new Set(tags)];
-  }
+  let ringColor  = "#2d6a4f";
+  let scoreClass = "great";
+  let scoreText  = "Great Choice";
+  if (score < 40)      { ringColor = "#c0392b"; scoreClass = "poor";     scoreText = "Poor Choice"; }
+  else if (score < 70) { ringColor = "#b07d00"; scoreClass = "moderate"; scoreText = "Okay Choice"; }
 
   const healthTags = getHealthTags(product);
+  const fmt = (val, unit = "") => (val != null && val !== "") ? `${val}${unit}` : "—";
 
   return (
-    <div style={styles.page}>
-      <h1 style={styles.title}>{product.productName}</h1>
+    <div className="pc-page">
 
-      <div style={styles.content}>
-        {/* Product Image Section */}
-        <div style={styles.imageBox}>
-          <img src={product.image} alt={product.productName} style={styles.image} />
-        </div>
+      {/* ── Main nutrition card ── */}
+      <div className="pc-card">
 
-        {/* --- THE SCORE BOX (Pattern: Input Feedback) --- */}
-        <div style={{ ...styles.scoreBox, backgroundColor: boxColor }}>
-          <h2 style={styles.scoreLabel}>Health Score</h2>
-          <div style={styles.scoreNumber}>{score}/100</div>
-          <p style={styles.statusText}>{statusText}</p>
-          
-          {/* A Simple Visual Indicator Bar */}
-          <div style={styles.progressContainer}>
-            <div style={{ ...styles.progressBar, left: `${score}%` }}></div>
+        {/* Sidebar */}
+        <div className="pc-sidebar">
+          <span className="pc-brand-badge">{product.brand || "SmartBite"}</span>
+
+          <div className="pc-image-circle">
+            {product.image ? (
+              <img src={product.image} alt={product.productName} />
+            ) : (
+              <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                <circle cx="40" cy="40" r="28" fill="rgba(255,255,255,0.18)" />
+                <rect x="24" y="20" width="32" height="36" rx="6" fill="rgba(255,255,255,0.5)" />
+                <rect x="30" y="14" width="20" height="9" rx="4.5" fill="rgba(255,255,255,0.3)" />
+              </svg>
+            )}
+          </div>
+
+          <div className="pc-sidebar-text">
+            <p className="pc-sidebar-name">{product.productName}</p>
+            <p className="pc-sidebar-sub">
+              {nutrition.servingSize || product.category || ""}
+            </p>
           </div>
         </div>
 
-        {/* Nutrition Info */}
-        <NutritionLabel food={product} />
-      </div>
+        {/* Right panel */}
+        <div className="pc-panel">
 
-      {/* Ingredients Section */}
-      <div style={styles.ingredientsBox}>
-        <h3>Ingredients</h3>
-        <p>{product.ingredients?.length ? product.ingredients.join(", ") : "Ingredients not listed."}</p>
-        <div style={styles.tagRow}>
-          {healthTags.length > 0 ? (
-            healthTags.map((tag) => (
-              <span key={tag} style={styles.tagBadge}>{tag}</span>
-            ))
-          ) : (
-            <span style={styles.tagBadge}>No health tags available</span>
-          )}
+          {/* Header */}
+          <div className="pc-header">
+            <div>
+              <h2 className="pc-product-name">{product.productName}</h2>
+              <p className="pc-subtitle">
+                {[product.category, product.brand].filter(Boolean).join(" · ")}
+              </p>
+            </div>
+
+            {/* Score ring */}
+            <div className="pc-score-block">
+              <svg className="pc-score-ring" viewBox="0 0 110 110">
+                <circle cx="55" cy="55" r={radius} fill="none" stroke="#e0ede8" strokeWidth="7" />
+                <circle
+                  cx="55" cy="55" r={radius}
+                  fill="none"
+                  stroke={ringColor}
+                  strokeWidth="7"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={offset}
+                  strokeLinecap="round"
+                  transform="rotate(-90 55 55)"
+                />
+                <text x="55" y="50" textAnchor="middle"
+                  fontFamily="DM Sans,sans-serif" fontSize="26" fontWeight="700" fill="#111">
+                  {score}
+                </text>
+                <text x="55" y="66" textAnchor="middle"
+                  fontFamily="DM Sans,sans-serif" fontSize="13" fill="#bbb">
+                  /100
+                </text>
+              </svg>
+              <p className={`pc-score-label ${scoreClass}`}>{scoreText}</p>
+            </div>
+          </div>
+
+          <div className="pc-divider" />
+
+          {/* Nutrition Facts */}
+          <div className="pc-nf-header">
+            <span className="pc-nf-title">Nutrition Facts</span>
+            {nutrition.servingSize && (
+              <span className="pc-nf-serving">Per serving · {nutrition.servingSize}</span>
+            )}
+          </div>
+
+          <div className="pc-calories-row">
+            <span className="pc-cal-label">Calories</span>
+            <span className="pc-cal-value">
+              {nutrition.calories ?? "—"} <span className="pc-cal-unit">kcal</span>
+            </span>
+          </div>
+
+          <div className="pc-nutrient-grid">
+            <div className="pc-nutrient-cell">
+              <span className="pc-nutrient-name">Total Fat</span>
+              <span className="pc-nutrient-value">{fmt(nutrition.fat, "g")}</span>
+            </div>
+            <div className="pc-nutrient-cell">
+              <span className="pc-nutrient-name">Sodium</span>
+              <span className="pc-nutrient-value">{fmt(nutrition.sodium, "mg")}</span>
+            </div>
+            <div className="pc-nutrient-cell">
+              <span className="pc-nutrient-name">Saturated Fat</span>
+              <span className="pc-nutrient-value">{fmt(nutrition.saturatedFat, "g")}</span>
+            </div>
+            <div className="pc-nutrient-cell">
+              <span className="pc-nutrient-name">Total Carbs</span>
+              <span className="pc-nutrient-value">{fmt(nutrition.carbs, "g")}</span>
+            </div>
+            <div className="pc-nutrient-cell">
+              <span className="pc-nutrient-name">Total Sugars</span>
+              <span className="pc-nutrient-value">{fmt(nutrition.sugar, "g")}</span>
+            </div>
+            <div className="pc-nutrient-cell empty" />
+          </div>
+
+          <div className="pc-protein-row">
+            <span className="pc-protein-label">Protein</span>
+            <span className="pc-protein-value">{fmt(nutrition.protein, "g")}</span>
+          </div>
+
         </div>
       </div>
 
-      <Link to="/search">
-        <button style={styles.button}>Back to Search</button>
-      </Link>
+      {/* ── Ingredients card ── */}
+      <div className="pc-ingredients-card">
+        <h3>Ingredients</h3>
+        <p>
+          {product.ingredients?.length
+            ? product.ingredients.join(", ")
+            : "Ingredients not listed."}
+        </p>
+        <div className="pc-tag-row">
+          {healthTags.length > 0
+            ? healthTags.map((tag) => <span key={tag} className="pc-tag">{tag}</span>)
+            : <span className="pc-tag">No health tags available</span>}
+        </div>
+      </div>
+
+      {/* ── Back button ── */}
+      <button className="pc-back-btn" onClick={() => navigate("/search")}>
+        ← Back to Search
+      </button>
+
     </div>
   );
 }
-
-const styles = {
-  page: { textAlign: "center", padding: "40px", background: "#1a4c2a", minHeight: "100vh", color: "white", fontFamily: "Arial, sans-serif" },
-  loading: { padding: "100px", fontSize: "20px" },
-  title: { marginBottom: "30px", fontSize: "2.5rem", fontWeight: "800" },
-  content: { display: "flex", justifyContent: "center", gap: "40px", flexWrap: "wrap", marginBottom: "30px" },
-  imageBox: { width: "280px" },
-  image: { width: "100%", borderRadius: "20px", boxShadow: "0 10px 40px rgba(0,0,0,0.5)" },
-  scoreBox: { 
-    width: "320px", 
-    padding: "40px", 
-    borderRadius: "30px", 
-    display: "flex", 
-    flexDirection: "column", 
-    justifyContent: "center",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
-    transition: "background-color 0.6s ease" 
-  },
-  scoreLabel: { fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px", opacity: 0.8 },
-  scoreNumber: { fontSize: "64px", fontWeight: "bold" },
-  statusText: { fontSize: "22px", fontWeight: "bold", marginTop: "10px" },
-  progressContainer: { width: "100%", height: "8px", background: "rgba(255,255,255,0.2)", borderRadius: "10px", marginTop: "20px", position: "relative" },
-  progressBar: { position: "absolute", top: "-4px", width: "4px", height: "16px", background: "white", borderRadius: "2px" },
-  ingredientsBox: { width: "800px", maxWidth: "90%", margin: "0 auto 40px", padding: "25px", background: "rgba(255,255,255,0.1)", borderRadius: "15px", textAlign: "left" },
-  tagRow: { display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "16px" },
-  tagBadge: { display: "inline-flex", alignItems: "center", padding: "8px 14px", borderRadius: "999px", background: "rgba(255,255,255,0.18)", color: "white", fontSize: "0.9rem", fontWeight: "700" },
-  button: { padding: "14px 40px", borderRadius: "50px", border: "2px solid white", background: "transparent", color: "white", cursor: "pointer", fontWeight: "bold", fontSize: "16px" }
-};

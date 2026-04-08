@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import "../components/ProductCard.css";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [searched, setSearched] = useState(false);
 
   const navigate = useNavigate();
   const observer = useRef();
@@ -13,8 +15,7 @@ export default function SearchPage() {
   async function handleSearch() {
     try {
       setLoading(true);
-
-      // reset when new search happens
+      setSearched(true);
       setResults([]);
       setPage(1);
 
@@ -29,207 +30,283 @@ export default function SearchPage() {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
+      setLoading(false);
     }
   }
 
-  // 🔥 fetch more when page changes
   useEffect(() => {
-    if (page === 1) return; // already handled in search
-
+    if (page === 1) return;
     async function fetchMore() {
       try {
         setLoading(true);
-
-        const response = await fetch(
-          `http://localhost:5000/api/products?page=${page}`
-        );
+        const response = await fetch(`http://localhost:5000/api/products?page=${page}`);
         const data = await response.json();
-
         const filteredProducts = data.filter((product) =>
           product.productName.toLowerCase().includes(query.toLowerCase())
         );
-
-        // append instead of replace
         setResults((prev) => [...prev, ...filteredProducts]);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching more products:", error);
+        setLoading(false);
       }
     }
-
     fetchMore();
   }, [page]);
 
-  // 🔥 Infinite Scroll Observer
   const lastProductRef = useCallback(
     (node) => {
       if (loading) return;
-
       if (observer.current) observer.current.disconnect();
-
       observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          setPage((prev) => prev + 1);
-        }
+        if (entries[0].isIntersecting) setPage((prev) => prev + 1);
       });
-
       if (node) observer.current.observe(node);
     },
     [loading]
   );
 
+  function handleKeyDown(e) {
+    if (e.key === "Enter") handleSearch();
+  }
+
   return (
-    <div
-      style={{
-        textAlign: "center",
-        padding: "40px",
-        minHeight: "100vh",
-        background:
-          "linear-gradient(160deg, #1a5c2a 0%, #2d8a3e 40%, #f5a623 100%)",
-        color: "white",
-      }}
-    >
-      <h1>Search Products</h1>
+    <div style={s.page}>
 
-      <input
-        type="text"
-        placeholder="Search for a product..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        style={{
-          padding: "12px 20px",
-          fontSize: "16px",
-          width: "260px",
-          borderRadius: "50px",
-          border: "none",
-          outline: "none",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-        }}
-      />
+      {/* ── Search header card ── */}
+      <div style={s.searchCard}>
+        <h1 style={s.title}>Search Products</h1>
+        <p style={s.subtitle}>Find any food and get its nutrition breakdown and health score.</p>
 
-      <br />
-      <br />
-
-      <button
-        onClick={handleSearch}
-        style={{
-          padding: "12px 28px",
-          fontSize: "16px",
-          fontWeight: "bold",
-          background: "linear-gradient(135deg, #f5a623, #f76b1c)",
-          color: "white",
-          border: "none",
-          borderRadius: "50px",
-          cursor: "pointer",
-          boxShadow: "0 4px 14px rgba(247,107,28,0.4)",
-          marginLeft: "10px",
-        }}
-      >
-        Search
-      </button>
-
-      <br />
-      <br />
-
-      <div>
-        {results.length > 0 ? (
-          results.map((product, index) => {
-            // 🔥 attach observer to LAST item
-            if (index === results.length - 1) {
-              return (
-                <div
-                  ref={lastProductRef}
-                  key={product._id}
-                  style={styles.card}
-                  onClick={() =>
-                    navigate(`/product/${product._id}`, {
-                      state: { product },
-                    })
-                  }
-                >
-                  <img
-                    src={product.image}
-                    alt={product.productName}
-                    style={styles.image}
-                  />
-                  <h3>{product.productName}</h3>
-                  <p style={{ color: "#555" }}>
-                    Click to view details
-                  </p>
-                </div>
-              );
-            }
-
-            return (
-              <div
-                key={product._id}
-                style={styles.card}
-                onClick={() =>
-                  navigate(`/product/${product._id}`, {
-                    state: { product },
-                  })
-                }
-              >
-                <img
-                  src={product.image}
-                  alt={product.productName}
-                  style={styles.image}
-                />
-                <h3>{product.productName}</h3>
-                <p style={{ color: "#555" }}>
-                  Click to view details
-                </p>
-              </div>
-            );
-          })
-        ) : (
-          <p></p>
-        )}
+        <div style={s.inputRow}>
+          <input
+            type="text"
+            placeholder="Search for a product..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+            style={s.input}
+          />
+          <button onClick={handleSearch} style={s.searchBtn}>Search</button>
+        </div>
       </div>
 
-      {loading && <p>Loading more products...</p>}
+      {/* ── Results ── */}
+      {searched && (
+        <div style={s.resultsArea}>
+          {results.length > 0 ? (
+            <div style={s.grid}>
+              {results.map((product, index) => {
+                const isLast = index === results.length - 1;
+                return (
+                  <div
+                    ref={isLast ? lastProductRef : null}
+                    key={product._id}
+                    style={s.resultCard}
+                    onClick={() => navigate(`/product/${product._id}`, { state: { product } })}
+                  >
+                    {product.image && (
+                      <div style={s.imgWrap}>
+                        <img src={product.image} alt={product.productName} style={s.img} />
+                      </div>
+                    )}
+                    <div style={s.cardBody}>
+                      <p style={s.productName}>{product.productName}</p>
+                      {product.brand && <p style={s.brand}>{product.brand}</p>}
+                      <span style={s.viewBtn}>View details →</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : !loading ? (
+            <div style={s.emptyState}>
+              <p style={s.emptyText}>No products found for "<strong>{query}</strong>"</p>
+              <p style={s.emptyHint}>Try a different search term.</p>
+            </div>
+          ) : null}
+        </div>
+      )}
 
-      <br />
+      {loading && (
+        <div style={s.loadingRow}>
+          <div style={s.spinner} />
+          <span style={s.loadingText}>Loading products...</span>
+        </div>
+      )}
 
-      <Link
-        to="/"
-        style={{ display: "flex", justifyContent: "center", textDecoration: "none" }}
-      >
-        <button style={styles.button}>Home</button>
+      <Link to="/" style={{ textDecoration: "none", marginTop: 8 }}>
+        <button style={s.homeBtn}>← Home</button>
       </Link>
     </div>
   );
 }
 
-const styles = {
-  card: {
-    border: "none",
-    padding: "15px",
-    margin: "12px auto",
-    width: "300px",
-    borderRadius: "16px",
-    cursor: "pointer",
-    background: "rgba(255,255,255,0.95)",
-    color: "#1a3a20",
-    boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
-    transition: "transform 0.2s, box-shadow 0.2s",
+const s = {
+  page: {
+    fontFamily: "'DM Sans', sans-serif",
+    minHeight: "100vh",
+    background: "#edf2ee",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    padding: "48px 40px 60px",
+    gap: 28,
   },
-  image: {
+
+  /* search card */
+  searchCard: {
     width: "100%",
-    height: "150px",
-    objectFit: "cover",
-    borderRadius: "10px",
-    marginBottom: "10px",
+    maxWidth: 700,
+    background: "#fff",
+    borderRadius: 28,
+    padding: "44px 52px",
+    boxShadow: "0 8px 36px rgba(0,0,0,0.09)",
+    textAlign: "center",
   },
-  button: {
-    padding: "12px 28px",
-    border: "2px solid rgba(255,255,255,0.7)",
-    borderRadius: "50px",
+  title: {
+    fontFamily: "'DM Serif Display', serif",
+    fontSize: 36,
+    fontWeight: 400,
+    color: "#111",
+    margin: "0 0 10px",
+  },
+  subtitle: {
+    fontSize: 15,
+    color: "#999",
+    margin: "0 0 28px",
+    lineHeight: 1.6,
+  },
+  inputRow: {
+    display: "flex",
+    gap: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  input: {
+    flex: 1,
+    maxWidth: 380,
+    padding: "14px 22px",
+    fontSize: 15,
+    borderRadius: 50,
+    border: "1.5px solid #ddd",
+    outline: "none",
+    fontFamily: "'DM Sans', sans-serif",
+    color: "#333",
+    background: "#fafafa",
+    transition: "border-color 0.2s",
+  },
+  searchBtn: {
+    padding: "14px 32px",
+    fontSize: 15,
+    fontWeight: 700,
+    background: "linear-gradient(160deg, #3e8560, #1e4f3a)",
+    color: "#fff",
+    border: "none",
+    borderRadius: 50,
     cursor: "pointer",
-    background: "rgba(255,255,255,0.15)",
-    color: "white",
-    fontSize: "15px",
-    fontWeight: "bold",
-    backdropFilter: "blur(8px)",
+    fontFamily: "'DM Sans', sans-serif",
+    boxShadow: "0 4px 16px rgba(45,106,79,0.3)",
+    whiteSpace: "nowrap",
+  },
+
+  /* results */
+  resultsArea: {
+    width: "100%",
+    maxWidth: 900,
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+    gap: 18,
+  },
+  resultCard: {
+    background: "#fff",
+    borderRadius: 20,
+    boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
+    overflow: "hidden",
+    cursor: "pointer",
+    transition: "transform 0.15s, box-shadow 0.15s",
+    display: "flex",
+    flexDirection: "column",
+  },
+  imgWrap: {
+    width: "100%",
+    height: 160,
+    background: "#f4f8f5",
+    overflow: "hidden",
+  },
+  img: {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+  },
+  cardBody: {
+    padding: "18px 20px 20px",
+    display: "flex",
+    flexDirection: "column",
+    gap: 4,
+    flex: 1,
+  },
+  productName: {
+    fontSize: 15,
+    fontWeight: 700,
+    color: "#111",
+    margin: 0,
+    lineHeight: 1.35,
+  },
+  brand: {
+    fontSize: 13,
+    color: "#aaa",
+    margin: 0,
+  },
+  viewBtn: {
+    marginTop: 10,
+    fontSize: 13,
+    fontWeight: 700,
+    color: "#2d6a4f",
+  },
+
+  /* empty */
+  emptyState: {
+    background: "#fff",
+    borderRadius: 20,
+    padding: "48px 32px",
+    textAlign: "center",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
+  },
+  emptyText: { fontSize: 17, color: "#444", margin: "0 0 8px" },
+  emptyHint: { fontSize: 14, color: "#aaa", margin: 0 },
+
+  /* loading */
+  loadingRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+  },
+  spinner: {
+    width: 22,
+    height: 22,
+    border: "3px solid #ddd",
+    borderTop: "3px solid #2d6a4f",
+    borderRadius: "50%",
+    animation: "spin 0.8s linear infinite",
+  },
+  loadingText: {
+    fontSize: 14,
+    color: "#888",
+  },
+
+  /* home btn */
+  homeBtn: {
+    padding: "13px 36px",
+    borderRadius: 50,
+    border: "2px solid #2d6a4f",
+    background: "transparent",
+    color: "#2d6a4f",
+    fontSize: 15,
+    fontWeight: 700,
+    cursor: "pointer",
+    fontFamily: "'DM Sans', sans-serif",
   },
 };
