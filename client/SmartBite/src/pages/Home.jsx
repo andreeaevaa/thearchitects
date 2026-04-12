@@ -63,7 +63,6 @@ export default function Home() {
 
       {/* ── Hero ── */}
       <section style={s.hero}>
-        <div style={s.logoMark}>SB</div>
         <h1 style={s.title}>SmartBite</h1>
         {displayName && (
           <p style={s.welcome}>Welcome back, {displayName}!</p>
