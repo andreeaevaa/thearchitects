@@ -8,7 +8,7 @@ export default function ScanPage() {
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("Press 'Start Camera' to begin scanning");
-  const [found, setFound] = useState(false);
+  const foundRef = useRef(false);
   const navigate = useNavigate();
 
   function stopScanner() {
@@ -24,7 +24,7 @@ export default function ScanPage() {
   async function startScanner() {
     setError("");
     setStatus("Starting camera...");
-    setFound(false);
+    foundRef.current = false;
 
     try {
       const reader = new BrowserMultiFormatReader();
@@ -36,12 +36,12 @@ export default function ScanPage() {
         undefined,
         videoRef.current,
         async (result, err) => {
-          if (found) return;
+          if (foundRef.current) return;
 
           if (result) {
             const barcode = result.getText();
             setStatus(`Barcode detected: ${barcode} — looking up product...`);
-            setFound(true);
+            foundRef.current = true;
             stopScanner();
             await lookupProduct(barcode);
           }
@@ -61,14 +61,14 @@ export default function ScanPage() {
       if (!product || !product._id) {
         setStatus("");
         setError(`No product found for barcode: ${barcode}. It may not be in the database yet.`);
-        setFound(false);
+        foundRef.current = false;
         return;
       }
 
       navigate(`/product/${product._id}`, { state: { product } });
     } catch (err) {
       setError("Error connecting to server.");
-      setFound(false);
+      foundRef.current = false;
     }
   }
 
