@@ -74,9 +74,7 @@ export default function Home() {
 
         <div style={s.buttons}>
           <Link to="/scan">
-            <button style={s.btnPrimary}>
-              <span style={s.btnIcon}>⬡</span> Scan Product
-            </button>
+            <button style={s.btnPrimary}>Scan Product</button>
           </Link>
           <Link to="/search">
             <button style={s.btnSecondary}>Search Products</button>
