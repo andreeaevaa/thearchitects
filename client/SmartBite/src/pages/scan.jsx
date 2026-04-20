@@ -54,6 +54,7 @@ export default function ScanPage() {
   }
 
   async function lookupProduct(barcode) {
+    console.log("Scanned barcode:", barcode);
     try {
       const response = await fetch(`http://localhost:5000/api/products/barcode/${barcode}`);
       const product = await response.json();
