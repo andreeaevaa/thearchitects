@@ -3,10 +3,10 @@ import { useNavigate, Link } from "react-router-dom";
 
 function getStrength(pwd) {
   if (pwd.length === 0) return null;
-  if (pwd.length < 6) return { label: "Too short", color: "#d62828", width: "20%" };
-  if (pwd.length < 8) return { label: "Weak", color: "#f77f00", width: "40%" };
-  if (/[A-Z]/.test(pwd) && /[0-9]/.test(pwd)) return { label: "Strong", color: "#2d8a3e", width: "100%" };
-  return { label: "Fair", color: "#f5a623", width: "65%" };
+  if (pwd.length < 6) return { label: "Too short", color: "#c0392b", width: "20%" };
+  if (pwd.length < 8) return { label: "Weak", color: "#e67e22", width: "40%" };
+  if (/[A-Z]/.test(pwd) && /[0-9]/.test(pwd)) return { label: "Strong", color: "#2d5a3d", width: "100%" };
+  return { label: "Fair", color: "#b7791f", width: "65%" };
 }
 
 export default function Register() {
@@ -56,10 +56,8 @@ export default function Register() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        <h1 style={styles.logo}>🥦 SmartBite</h1>
+        <h1 style={styles.logo}>SmartBite</h1>
         <p style={styles.tagline}>Your personal nutrition companion.</p>
-
-        <h2 style={styles.heading}>Create an account</h2>
 
         <form onSubmit={handleRegister} style={styles.form}>
           <input
@@ -78,17 +76,19 @@ export default function Register() {
             style={styles.input}
             autoComplete="new-password"
           />
+
           {(() => {
-          const s = getStrength(password);
-          return s ? (
-          <div style={{ textAlign: "left", paddingLeft: "8px" }}>
-          <div style={{ background: "#eee", borderRadius: "50px", height: "6px" }}>
-          <div style={{ width: s.width, background: s.color, height: "6px", borderRadius: "50px", transition: "width 0.3s" }} />
-          </div>
-          <p style={{ fontSize: "12px", color: s.color, marginTop: "4px" }}>{s.label}</p>
-          </div>
-          ) : null;
+            const s = getStrength(password);
+            return s ? (
+              <div style={{ textAlign: "left", paddingLeft: "4px" }}>
+                <div style={{ background: "#dde5de", borderRadius: "50px", height: "6px" }}>
+                  <div style={{ width: s.width, background: s.color, height: "6px", borderRadius: "50px", transition: "width 0.3s" }} />
+                </div>
+                <p style={{ fontSize: "12px", color: s.color, marginTop: "5px", fontWeight: 700 }}>{s.label}</p>
+              </div>
+            ) : null;
           })()}
+
           <input
             type="password"
             placeholder="Confirm password"
@@ -101,7 +101,7 @@ export default function Register() {
           {error && <p style={styles.error}>{error}</p>}
           {success && <p style={styles.success}>{success}</p>}
 
-          <button type="submit" style={styles.btn} disabled={loading}>
+          <button type="submit" style={styles.primaryBtn} disabled={loading}>
             {loading ? "Creating account..." : "Create Account"}
           </button>
         </form>
@@ -120,37 +120,35 @@ export default function Register() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(160deg, #1a5c2a 0%, #2d8a3e 50%, #f5a623 100%)",
+    background: "#e8ede9",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     padding: "20px",
+    fontFamily: "'DM Sans', sans-serif",
   },
   card: {
-    background: "rgba(255,255,255,0.96)",
+    background: "#ffffff",
     borderRadius: "24px",
-    padding: "48px 40px",
+    padding: "52px 44px",
     width: "100%",
-    maxWidth: "400px",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+    maxWidth: "420px",
+    boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
     textAlign: "center",
   },
   logo: {
-    fontSize: "2.2rem",
-    color: "#1a5c2a",
-    fontWeight: "bold",
-    marginBottom: "6px",
+    fontFamily: "'DM Serif Display', serif",
+    fontSize: "2.6rem",
+    fontWeight: 400,
+    color: "#111",
+    margin: "0 0 10px",
+    letterSpacing: "-0.5px",
   },
   tagline: {
-    color: "#666",
-    fontSize: "0.9rem",
-    marginBottom: "32px",
-  },
-  heading: {
-    fontSize: "1.4rem",
-    color: "#1a3a20",
-    marginBottom: "24px",
-    fontWeight: "bold",
+    color: "#888",
+    fontSize: "0.95rem",
+    marginBottom: "36px",
+    lineHeight: 1.5,
   },
   form: {
     display: "flex",
@@ -158,50 +156,54 @@ const styles = {
     gap: "14px",
   },
   input: {
-    padding: "13px 18px",
+    padding: "13px 20px",
     fontSize: "15px",
     borderRadius: "50px",
-    border: "2px solid #e0e0e0",
+    border: "1.5px solid #dde5de",
     outline: "none",
-    fontFamily: "Georgia, serif",
+    fontFamily: "'DM Sans', sans-serif",
+    background: "#f7faf7",
+    color: "#222",
   },
-  btn: {
+  primaryBtn: {
     marginTop: "6px",
     padding: "14px",
-    fontSize: "16px",
-    fontWeight: "bold",
-    background: "linear-gradient(135deg, #f5a623, #f76b1c)",
+    fontSize: "15px",
+    fontWeight: 700,
+    background: "#2d5a3d",
     color: "white",
     border: "none",
     borderRadius: "50px",
     cursor: "pointer",
-    letterSpacing: "0.5px",
-    boxShadow: "0 6px 18px rgba(247,107,28,0.35)",
+    letterSpacing: "0.3px",
+    fontFamily: "'DM Sans', sans-serif",
   },
   error: {
-    color: "#d62828",
+    color: "#c0392b",
     fontSize: "14px",
     margin: "0",
-    padding: "8px 14px",
-    background: "#fff0f0",
-    borderRadius: "8px",
+    padding: "10px 16px",
+    background: "#fdf0ef",
+    borderRadius: "12px",
+    textAlign: "left",
   },
   success: {
-    color: "#2d8a3e",
+    color: "#2d5a3d",
     fontSize: "14px",
     margin: "0",
-    padding: "8px 14px",
-    background: "#f0fff4",
-    borderRadius: "8px",
+    padding: "10px 16px",
+    background: "#edf7f0",
+    borderRadius: "12px",
+    textAlign: "left",
   },
   switchText: {
     marginTop: "28px",
-    color: "#555",
+    color: "#777",
     fontSize: "14px",
   },
   link: {
-    color: "#f76b1c",
-    fontWeight: "bold",
+    color: "#2d5a3d",
+    fontWeight: 700,
     textDecoration: "none",
   },
 };
