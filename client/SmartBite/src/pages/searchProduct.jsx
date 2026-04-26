@@ -1,25 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../components/ProductCard.css";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
-  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
   const navigate = useNavigate();
-  const observer = useRef();
 
   async function handleSearch() {
+    if (!query.trim()) return;
     try {
       setLoading(true);
       setSearched(true);
       setResults([]);
-      setPage(1);
 
-      const response = await fetch(`http://localhost:5000/api/products?page=1`);
+      const response = await fetch(`http://localhost:5000/api/products`);
       const data = await response.json();
 
       const filteredProducts = data.filter((product) =>
@@ -27,44 +24,12 @@ export default function SearchPage() {
       );
 
       setResults(filteredProducts);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
+    } finally {
       setLoading(false);
     }
   }
-
-  useEffect(() => {
-    if (page === 1) return;
-    async function fetchMore() {
-      try {
-        setLoading(true);
-        const response = await fetch(`http://localhost:5000/api/products?page=${page}`);
-        const data = await response.json();
-        const filteredProducts = data.filter((product) =>
-          product.productName.toLowerCase().includes(query.toLowerCase())
-        );
-        setResults((prev) => [...prev, ...filteredProducts]);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching more products:", error);
-        setLoading(false);
-      }
-    }
-    fetchMore();
-  }, [page]);
-
-  const lastProductRef = useCallback(
-    (node) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) setPage((prev) => prev + 1);
-      });
-      if (node) observer.current.observe(node);
-    },
-    [loading]
-  );
 
   function handleKeyDown(e) {
     if (e.key === "Enter") handleSearch();
@@ -73,7 +38,7 @@ export default function SearchPage() {
   return (
     <div style={s.page}>
 
-      {/* ── Search header card ── */}
+      {/* Search header card */}
       <div style={s.searchCard}>
         <h1 style={s.title}>Search Products</h1>
         <p style={s.subtitle}>Find any food and get its nutrition breakdown and health score.</p>
@@ -91,47 +56,43 @@ export default function SearchPage() {
         </div>
       </div>
 
-      {/* ── Results ── */}
-      {searched && (
+      {/* Results */}
+      {loading && (
+        <div style={s.loadingRow}>
+          <div style={s.spinner} />
+          <span style={s.loadingText}>Searching...</span>
+        </div>
+      )}
+
+      {searched && !loading && (
         <div style={s.resultsArea}>
           {results.length > 0 ? (
             <div style={s.grid}>
-              {results.map((product, index) => {
-                const isLast = index === results.length - 1;
-                return (
-                  <div
-                    ref={isLast ? lastProductRef : null}
-                    key={product._id}
-                    style={s.resultCard}
-                    onClick={() => navigate(`/product/${product._id}`, { state: { product } })}
-                  >
-                    {product.image && (
-                      <div style={s.imgWrap}>
-                        <img src={product.image} alt={product.productName} style={s.img} />
-                      </div>
-                    )}
-                    <div style={s.cardBody}>
-                      <p style={s.productName}>{product.productName}</p>
-                      {product.brand && <p style={s.brand}>{product.brand}</p>}
-                      <span style={s.viewBtn}>View details →</span>
+              {results.map((product) => (
+                <div
+                  key={product._id}
+                  style={s.resultCard}
+                  onClick={() => navigate(`/product/${product._id}`, { state: { product } })}
+                >
+                  {product.image && (
+                    <div style={s.imgWrap}>
+                      <img src={product.image} alt={product.productName} style={s.img} />
                     </div>
+                  )}
+                  <div style={s.cardBody}>
+                    <p style={s.productName}>{product.productName}</p>
+                    {product.brand && <p style={s.brand}>{product.brand}</p>}
+                    <span style={s.viewBtn}>View details →</span>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
-          ) : !loading ? (
+          ) : (
             <div style={s.emptyState}>
               <p style={s.emptyText}>No products found for "<strong>{query}</strong>"</p>
               <p style={s.emptyHint}>Try a different search term.</p>
             </div>
-          ) : null}
-        </div>
-      )}
-
-      {loading && (
-        <div style={s.loadingRow}>
-          <div style={s.spinner} />
-          <span style={s.loadingText}>Loading products...</span>
+          )}
         </div>
       )}
 
@@ -146,22 +107,20 @@ const s = {
   page: {
     fontFamily: "'DM Sans', sans-serif",
     minHeight: "100vh",
-    background: "#edf2ee",
+    background: "#e8ede9",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     padding: "48px 40px 60px",
     gap: 28,
   },
-
-  /* search card */
   searchCard: {
     width: "100%",
     maxWidth: 700,
     background: "#fff",
-    borderRadius: 28,
+    borderRadius: 24,
     padding: "44px 52px",
-    boxShadow: "0 8px 36px rgba(0,0,0,0.09)",
+    boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
     textAlign: "center",
   },
   title: {
@@ -170,6 +129,7 @@ const s = {
     fontWeight: 400,
     color: "#111",
     margin: "0 0 10px",
+    letterSpacing: "-0.5px",
   },
   subtitle: {
     fontSize: 15,
@@ -186,31 +146,27 @@ const s = {
   input: {
     flex: 1,
     maxWidth: 380,
-    padding: "14px 22px",
+    padding: "13px 22px",
     fontSize: 15,
     borderRadius: 50,
-    border: "1.5px solid #ddd",
+    border: "1.5px solid #dde5de",
     outline: "none",
     fontFamily: "'DM Sans', sans-serif",
     color: "#333",
-    background: "#fafafa",
-    transition: "border-color 0.2s",
+    background: "#f7faf7",
   },
   searchBtn: {
-    padding: "14px 32px",
+    padding: "13px 32px",
     fontSize: 15,
     fontWeight: 700,
-    background: "linear-gradient(160deg, #3e8560, #1e4f3a)",
+    background: "#2d5a3d",
     color: "#fff",
     border: "none",
     borderRadius: 50,
     cursor: "pointer",
     fontFamily: "'DM Sans', sans-serif",
-    boxShadow: "0 4px 16px rgba(45,106,79,0.3)",
     whiteSpace: "nowrap",
   },
-
-  /* results */
   resultsArea: {
     width: "100%",
     maxWidth: 900,
@@ -226,14 +182,13 @@ const s = {
     boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
     overflow: "hidden",
     cursor: "pointer",
-    transition: "transform 0.15s, box-shadow 0.15s",
     display: "flex",
     flexDirection: "column",
   },
   imgWrap: {
     width: "100%",
     height: 160,
-    background: "#f4f8f5",
+    background: "#f0f4f1",
     overflow: "hidden",
   },
   img: {
@@ -264,10 +219,8 @@ const s = {
     marginTop: 10,
     fontSize: 13,
     fontWeight: 700,
-    color: "#2d6a4f",
+    color: "#2d5a3d",
   },
-
-  /* empty */
   emptyState: {
     background: "#fff",
     borderRadius: 20,
@@ -277,8 +230,6 @@ const s = {
   },
   emptyText: { fontSize: 17, color: "#444", margin: "0 0 8px" },
   emptyHint: { fontSize: 14, color: "#aaa", margin: 0 },
-
-  /* loading */
   loadingRow: {
     display: "flex",
     alignItems: "center",
@@ -287,8 +238,8 @@ const s = {
   spinner: {
     width: 22,
     height: 22,
-    border: "3px solid #ddd",
-    borderTop: "3px solid #2d6a4f",
+    border: "3px solid #dde5de",
+    borderTop: "3px solid #2d5a3d",
     borderRadius: "50%",
     animation: "spin 0.8s linear infinite",
   },
@@ -296,14 +247,12 @@ const s = {
     fontSize: 14,
     color: "#888",
   },
-
-  /* home btn */
   homeBtn: {
     padding: "13px 36px",
     borderRadius: 50,
-    border: "2px solid #2d6a4f",
+    border: "1.5px solid #2d5a3d",
     background: "transparent",
-    color: "#2d6a4f",
+    color: "#2d5a3d",
     fontSize: 15,
     fontWeight: 700,
     cursor: "pointer",

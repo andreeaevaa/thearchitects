@@ -125,35 +125,30 @@ export default function ProfilePage() {
     setProfile((p) => ({ ...p, [field]: value }));
   }
 
-  // Auto-calculate calorie target based on stats
   function calculateCalories() {
     const age = Number(profile.age);
     const weight = Number(profile.weight);
     const height = Number(profile.height);
     if (!age || !weight || !height) return;
-
-    // Mifflin-St Jeor BMR (using lbs/inches)
     const weightKg = weight * 0.453592;
     const heightCm = height * 2.54;
-    // Using male formula as a baseline (simplified for class project)
     const bmr = 10 * weightKg + 6.25 * heightCm - 5 * age + 5;
-
     const multipliers = {
       sedentary: 1.2, light: 1.375, moderate: 1.55,
       active: 1.725, very_active: 1.9,
     };
     let tdee = Math.round(bmr * (multipliers[profile.activityLevel] || 1.55));
-
     if (profile.goal === "lose") tdee -= 500;
     else if (profile.goal === "gain" || profile.goal === "muscle") tdee += 300;
-
     set("dailyCalorieTarget", tdee);
   }
 
   if (loading) {
     return (
       <div style={styles.page}>
-        <div style={styles.card}><p style={{ color: "#666" }}>Loading profile...</p></div>
+        <div style={styles.card}>
+          <p style={{ color: "#888", textAlign: "center" }}>Loading profile...</p>
+        </div>
       </div>
     );
   }
@@ -162,17 +157,16 @@ export default function ProfilePage() {
     <div style={styles.page}>
       <div style={styles.card}>
 
-        {/* Back link */}
-        <Link to="/" style={styles.backLink}>Back</Link>
+        <Link to="/" style={styles.backLink}>← Back</Link>
 
-        {/* Profile picture */}
+        {/* Avatar */}
         <div style={styles.avatarSection}>
           <div style={styles.avatarWrapper} onClick={() => fileInputRef.current.click()}>
             {profile.profilePicture ? (
               <img src={profile.profilePicture} alt="Profile" style={styles.avatarImg} />
             ) : (
               <div style={styles.avatarPlaceholder}>
-                <span style={{ fontSize: "2.5rem" }}>👤</span>
+                <span style={{ fontSize: "2.2rem" }}>👤</span>
                 <p style={styles.uploadHint}>Upload photo</p>
               </div>
             )}
@@ -225,8 +219,8 @@ export default function ProfilePage() {
                 onChange={(e) => set("dailyCalorieTarget", e.target.value)} />
             </div>
           </div>
-          <button style={styles.calcBtn} onClick={calculateCalories}>
-            Auto-calculate calories from my stats
+          <button style={styles.outlineBtn} onClick={calculateCalories}>
+            Auto-calculate from my stats
           </button>
         </div>
 
@@ -238,8 +232,8 @@ export default function ProfilePage() {
               <button
                 key={g.value}
                 style={{
-                  ...styles.goalBtn,
-                  ...(profile.goal === g.value ? styles.goalBtnActive : {}),
+                  ...styles.chipBtn,
+                  ...(profile.goal === g.value ? styles.chipBtnActive : {}),
                 }}
                 onClick={() => set("goal", g.value)}
               >
@@ -251,7 +245,7 @@ export default function ProfilePage() {
 
         {/* Activity level */}
         <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>🏃 Activity Level</h3>
+          <h3 style={styles.sectionTitle}>Activity Level</h3>
           <select
             style={styles.select}
             value={profile.activityLevel}
@@ -265,18 +259,18 @@ export default function ProfilePage() {
 
         {/* Nutrition preferences */}
         <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>⚙️ Nutrition Preferences</h3>
-          <div style={styles.toggleRow}>
+          <h3 style={styles.sectionTitle}>Nutrition Preferences</h3>
+          <div style={styles.chipRow}>
             {[
-              { key: "preferLowSodium", label: "🧂 Prefer Low Sodium" },
-              { key: "preferLowSugar", label: "🍬 Prefer Low Sugar" },
-              { key: "preferHighProtein", label: "🥩 Prefer High Protein" },
+              { key: "preferLowSodium", label: "🧂 Low Sodium" },
+              { key: "preferLowSugar", label: "🍬 Low Sugar" },
+              { key: "preferHighProtein", label: "🥩 High Protein" },
             ].map(({ key, label }) => (
               <button
                 key={key}
                 style={{
-                  ...styles.toggleBtn,
-                  ...(profile[key] ? styles.toggleBtnActive : {}),
+                  ...styles.chipBtn,
+                  ...(profile[key] ? styles.chipBtnActive : {}),
                 }}
                 onClick={() => set(key, !profile[key])}
               >
@@ -288,14 +282,14 @@ export default function ProfilePage() {
 
         {/* Dietary restrictions */}
         <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>🥗 Dietary Restrictions</h3>
-          <div style={styles.tagGrid}>
+          <h3 style={styles.sectionTitle}>Dietary Restrictions</h3>
+          <div style={styles.chipRow}>
             {DIETARY_OPTIONS.map((opt) => (
               <button
                 key={opt}
                 style={{
-                  ...styles.tag,
-                  ...(profile.dietaryRestrictions.includes(opt) ? styles.tagActive : {}),
+                  ...styles.chipBtn,
+                  ...(profile.dietaryRestrictions.includes(opt) ? styles.chipBtnActive : {}),
                 }}
                 onClick={() => toggleDietary(opt)}
               >
@@ -305,12 +299,12 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Save button */}
         {saveMsg && (
           <p style={saveMsg === "Profile saved!" ? styles.successMsg : styles.errorMsg}>
             {saveMsg}
           </p>
         )}
+
         <button style={styles.saveBtn} onClick={handleSave} disabled={saving}>
           {saving ? "Saving..." : "Save Profile"}
         </button>
@@ -323,25 +317,25 @@ export default function ProfilePage() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(160deg, #1a5c2a 0%, #2d8a3e 50%, #f5a623 100%)",
+    background: "#e8ede9",
     padding: "40px 20px",
-    fontFamily: "Lato, sans-serif",
+    fontFamily: "'DM Sans', sans-serif",
   },
   card: {
-    background: "white",
+    background: "#ffffff",
     borderRadius: "24px",
     padding: "40px 36px",
     maxWidth: "600px",
     margin: "0 auto",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+    boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
   },
   backLink: {
-    color: "#2d8a3e",
+    color: "#2d5a3d",
     textDecoration: "none",
-    fontWeight: "bold",
+    fontWeight: 700,
     fontSize: "0.9rem",
-    display: "block",
-    marginBottom: "24px",
+    display: "inline-block",
+    marginBottom: "28px",
   },
   avatarSection: {
     display: "flex",
@@ -350,13 +344,12 @@ const styles = {
     marginBottom: "32px",
   },
   avatarWrapper: {
-    position: "relative",
-    width: "110px",
-    height: "110px",
+    width: "100px",
+    height: "100px",
     borderRadius: "50%",
     overflow: "hidden",
     cursor: "pointer",
-    border: "4px solid #2d8a3e",
+    border: "3px solid #2d5a3d",
     marginBottom: "12px",
   },
   avatarImg: {
@@ -367,50 +360,42 @@ const styles = {
   avatarPlaceholder: {
     width: "100%",
     height: "100%",
-    background: "#f0f7f0",
+    background: "#f0f4f1",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
   },
-  avatarOverlay: {
-    position: "absolute",
-    bottom: "0",
-    width: "100%",
-    background: "rgba(0,0,0,0.45)",
-    color: "white",
-    textAlign: "center",
-    fontSize: "1.1rem",
-    padding: "4px 0",
-  },
   uploadHint: {
     fontSize: "0.7rem",
-    color: "#666",
+    color: "#888",
     marginTop: "4px",
   },
   usernameDisplay: {
-    color: "#1a5c2a",
-    fontWeight: "900",
-    fontSize: "1.1rem",
+    color: "#2d5a3d",
+    fontWeight: 700,
+    fontSize: "1rem",
+    margin: 0,
+    fontFamily: "'DM Sans', sans-serif",
   },
   section: {
     marginBottom: "28px",
-    textAlign: "left",
   },
   sectionTitle: {
-    fontSize: "1rem",
-    fontWeight: "900",
-    color: "#1a5c2a",
+    fontFamily: "'DM Serif Display', serif",
+    fontSize: "1.1rem",
+    fontWeight: 400,
+    color: "#111",
     marginBottom: "14px",
-    paddingBottom: "6px",
-    borderBottom: "2px solid #e8f5e9",
+    paddingBottom: "8px",
+    borderBottom: "1.5px solid #e8ede9",
   },
   label: {
     display: "block",
-    fontSize: "0.82rem",
-    fontWeight: "700",
-    color: "#555",
-    marginBottom: "5px",
+    fontSize: "0.78rem",
+    fontWeight: 700,
+    color: "#888",
+    marginBottom: "6px",
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
@@ -418,21 +403,24 @@ const styles = {
     width: "100%",
     padding: "11px 16px",
     fontSize: "15px",
-    borderRadius: "10px",
-    border: "2px solid #e0e0e0",
+    borderRadius: "12px",
+    border: "1.5px solid #dde5de",
     outline: "none",
-    fontFamily: "Lato, sans-serif",
+    fontFamily: "'DM Sans', sans-serif",
+    background: "#f7faf7",
+    color: "#222",
     boxSizing: "border-box",
   },
   select: {
     width: "100%",
     padding: "11px 16px",
     fontSize: "15px",
-    borderRadius: "10px",
-    border: "2px solid #e0e0e0",
+    borderRadius: "12px",
+    border: "1.5px solid #dde5de",
     outline: "none",
-    fontFamily: "Lato, sans-serif",
-    background: "white",
+    fontFamily: "'DM Sans', sans-serif",
+    background: "#f7faf7",
+    color: "#222",
   },
   row: {
     display: "flex",
@@ -442,105 +430,75 @@ const styles = {
   halfField: {
     flex: 1,
   },
-  calcBtn: {
-    padding: "9px 18px",
+  outlineBtn: {
+    padding: "9px 20px",
     fontSize: "13px",
-    fontWeight: "700",
-    background: "#e8f5e9",
-    color: "#1a5c2a",
-    border: "2px solid #2d8a3e",
+    fontWeight: 700,
+    background: "transparent",
+    color: "#2d5a3d",
+    border: "1.5px solid #2d5a3d",
     borderRadius: "50px",
     cursor: "pointer",
     marginTop: "4px",
+    fontFamily: "'DM Sans', sans-serif",
   },
   goalGrid: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
     gap: "10px",
   },
-  goalBtn: {
-    padding: "12px 10px",
-    fontSize: "14px",
-    fontWeight: "700",
-    background: "#f5f5f5",
-    color: "#444",
-    border: "2px solid #e0e0e0",
-    borderRadius: "12px",
-    cursor: "pointer",
-  },
-  goalBtnActive: {
-    background: "#e8f5e9",
-    color: "#1a5c2a",
-    border: "2px solid #2d8a3e",
-  },
-  toggleRow: {
-    display: "flex",
-    gap: "10px",
-    flexWrap: "wrap",
-  },
-  toggleBtn: {
-    padding: "9px 16px",
-    fontSize: "13px",
-    fontWeight: "700",
-    background: "#f5f5f5",
-    color: "#444",
-    border: "2px solid #e0e0e0",
-    borderRadius: "50px",
-    cursor: "pointer",
-  },
-  toggleBtnActive: {
-    background: "#fff3e0",
-    color: "#f76b1c",
-    border: "2px solid #f5a623",
-  },
-  tagGrid: {
+  chipRow: {
     display: "flex",
     flexWrap: "wrap",
     gap: "8px",
   },
-  tag: {
-    padding: "8px 16px",
+  chipBtn: {
+    padding: "9px 18px",
     fontSize: "13px",
-    fontWeight: "700",
-    background: "#f5f5f5",
-    color: "#444",
-    border: "2px solid #e0e0e0",
+    fontWeight: 700,
+    background: "#f0f4f1",
+    color: "#555",
+    border: "1.5px solid #dde5de",
     borderRadius: "50px",
     cursor: "pointer",
+    fontFamily: "'DM Sans', sans-serif",
+    transition: "all 0.15s",
   },
-  tagActive: {
-    background: "#e8f5e9",
-    color: "#1a5c2a",
-    border: "2px solid #2d8a3e",
+  chipBtnActive: {
+    background: "#2d5a3d",
+    color: "#fff",
+    border: "1.5px solid #2d5a3d",
   },
   saveBtn: {
     width: "100%",
     padding: "14px",
-    fontSize: "16px",
-    fontWeight: "900",
-    background: "linear-gradient(135deg, #2d8a3e, #1a5c2a)",
+    fontSize: "15px",
+    fontWeight: 700,
+    background: "#2d5a3d",
     color: "white",
     border: "none",
     borderRadius: "50px",
     cursor: "pointer",
-    boxShadow: "0 6px 18px rgba(45,138,62,0.35)",
-    letterSpacing: "0.5px",
+    fontFamily: "'DM Sans', sans-serif",
+    letterSpacing: "0.3px",
   },
   successMsg: {
-    color: "#2d8a3e",
-    background: "#f0fff4",
-    padding: "10px",
-    borderRadius: "10px",
+    color: "#2d5a3d",
+    background: "#edf7f0",
+    padding: "10px 16px",
+    borderRadius: "12px",
     marginBottom: "12px",
     textAlign: "center",
-    fontWeight: "700",
+    fontWeight: 700,
+    fontSize: "14px",
   },
   errorMsg: {
-    color: "#d62828",
-    background: "#fff0f0",
-    padding: "10px",
-    borderRadius: "10px",
+    color: "#c0392b",
+    background: "#fdf0ef",
+    padding: "10px 16px",
+    borderRadius: "12px",
     marginBottom: "12px",
     textAlign: "center",
+    fontSize: "14px",
   },
 };

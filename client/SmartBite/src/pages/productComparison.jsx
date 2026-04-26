@@ -26,12 +26,8 @@ export default function ProductComparison() {
 
   function toggleSelection(id) {
     setSelectedIds((current) => {
-      if (current.includes(id)) {
-        return current.filter((item) => item !== id);
-      }
-      if (current.length >= 2) {
-        return current;
-      }
+      if (current.includes(id)) return current.filter((item) => item !== id);
+      if (current.length >= 2) return current;
       return [...current, id];
     });
   }
@@ -42,36 +38,39 @@ export default function ProductComparison() {
     }
   }
 
+  const canCompare = selectedIds.length === 2;
+
   return (
     <div style={styles.page}>
+      {/* Header */}
       <div style={styles.header}>
-        <h1>Compare Products</h1>
+        <Link to="/" style={styles.backLink}>← Back to Home</Link>
+        <h1 style={styles.title}>Compare Products</h1>
         <p style={styles.subtitle}>
-          Select up to two products and compare their health ratings side by side.
+          Select two products to compare their health ratings side by side.
         </p>
       </div>
 
+      {/* Action bar */}
       <div style={styles.actionRow}>
         <button
           onClick={handleCompare}
-          disabled={selectedIds.length !== 2}
+          disabled={!canCompare}
           style={{
-            ...styles.compareButton,
-            opacity: selectedIds.length === 2 ? 1 : 0.55,
-            cursor: selectedIds.length === 2 ? "pointer" : "not-allowed",
+            ...styles.primaryBtn,
+            opacity: canCompare ? 1 : 0.5,
+            cursor: canCompare ? "pointer" : "not-allowed",
           }}
         >
-          Compare {selectedIds.length === 2 ? "Now" : `(Select ${2 - selectedIds.length} more)`}
+          {canCompare ? "Compare Now" : `Select ${2 - selectedIds.length} more`}
         </button>
-        <Link to="/" style={styles.backLink}>
-          Back to Home
-        </Link>
       </div>
 
+      {/* Content */}
       {loading ? (
-        <div style={styles.loading}>Loading products...</div>
+        <div style={styles.stateBox}>Loading products...</div>
       ) : error ? (
-        <div style={styles.error}>{error}</div>
+        <div style={styles.errorBox}>{error}</div>
       ) : (
         <div style={styles.grid}>
           {products.map((product) => {
@@ -83,15 +82,29 @@ export default function ProductComparison() {
                 onClick={() => toggleSelection(product._id)}
                 style={{
                   ...styles.card,
-                  borderColor: selected ? "#f5a623" : "rgba(255,255,255,0.18)",
-                  background: selected ? "rgba(245,166,35,0.18)" : "rgba(255,255,255,0.12)",
+                  border: selected
+                    ? "2px solid #2d5a3d"
+                    : "2px solid transparent",
+                  boxShadow: selected
+                    ? "0 0 0 3px rgba(45,90,61,0.15)"
+                    : "0 2px 12px rgba(0,0,0,0.06)",
                 }}
               >
-                <img src={product.image} alt={product.productName} style={styles.image} />
+                <img
+                  src={product.image}
+                  alt={product.productName}
+                  style={styles.image}
+                />
                 <div style={styles.cardBody}>
                   <h3 style={styles.productName}>{product.productName}</h3>
-                  <span style={styles.statusBadge}>
-                    {selected ? "Selected" : "Tap to select"}
+                  <span
+                    style={{
+                      ...styles.badge,
+                      background: selected ? "#2d5a3d" : "#f0f4f1",
+                      color: selected ? "#fff" : "#888",
+                    }}
+                  >
+                    {selected ? "✓ Selected" : "Tap to select"}
                   </span>
                 </div>
               </button>
@@ -106,99 +119,104 @@ export default function ProductComparison() {
 const styles = {
   page: {
     minHeight: "100vh",
-    padding: "40px",
-    background: "linear-gradient(160deg, #1a5c2a 0%, #2d8a3e 40%, #f5a623 100%)",
-    color: "white",
-    fontFamily: "Lato, sans-serif",
+    background: "#e8ede9",
+    padding: "40px 40px 60px",
+    fontFamily: "'DM Sans', sans-serif",
+    color: "#111",
   },
   header: {
     textAlign: "center",
-    marginBottom: "30px",
+    marginBottom: "28px",
+  },
+  backLink: {
+    display: "inline-block",
+    color: "#2d5a3d",
+    fontWeight: 700,
+    textDecoration: "none",
+    fontSize: "0.9rem",
+    marginBottom: "20px",
+  },
+  title: {
+    fontFamily: "'DM Serif Display', serif",
+    fontSize: "2.4rem",
+    fontWeight: 400,
+    margin: "0 0 12px",
+    letterSpacing: "-0.5px",
   },
   subtitle: {
-    maxWidth: "680px",
-    margin: "16px auto 0",
-    opacity: 0.9,
-    lineHeight: 1.7,
+    color: "#666",
+    fontSize: "15px",
+    maxWidth: "500px",
+    margin: "0 auto",
+    lineHeight: 1.6,
   },
   actionRow: {
     display: "flex",
     justifyContent: "center",
-    alignItems: "center",
-    gap: "16px",
-    flexWrap: "wrap",
-    marginBottom: "28px",
+    marginBottom: "32px",
   },
-  compareButton: {
-    padding: "14px 32px",
-    borderRadius: "999px",
+  primaryBtn: {
+    padding: "13px 36px",
+    borderRadius: "50px",
     border: "none",
-    background: "#f5a623",
-    color: "#1a1a1a",
+    background: "#2d5a3d",
+    color: "#fff",
     fontWeight: 700,
-    fontSize: "16px",
+    fontSize: "15px",
+    fontFamily: "'DM Sans', sans-serif",
+    transition: "opacity 0.2s",
   },
-  backLink: {
-    padding: "14px 32px",
-    borderRadius: "999px",
-    background: "rgba(255,255,255,0.16)",
-    color: "white",
-    textDecoration: "none",
-    border: "1px solid rgba(255,255,255,0.35)",
-    fontWeight: 700,
-  },
-  loading: {
+  stateBox: {
     textAlign: "center",
-    fontSize: "18px",
+    color: "#888",
+    fontSize: "15px",
+    padding: "40px",
   },
-  error: {
+  errorBox: {
     textAlign: "center",
-    color: "#ffdddd",
-    background: "rgba(255,0,0,0.12)",
-    padding: "18px",
-    borderRadius: "18px",
-    maxWidth: "640px",
+    color: "#c0392b",
+    background: "#fdf0ef",
+    padding: "20px",
+    borderRadius: "16px",
+    maxWidth: "600px",
     margin: "0 auto",
+    fontSize: "14px",
   },
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-    gap: "18px",
+    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+    gap: "16px",
   },
   card: {
-    borderRadius: "24px",
+    borderRadius: "20px",
     overflow: "hidden",
-    border: "2px solid rgba(255,255,255,0.18)",
     cursor: "pointer",
     textAlign: "left",
-    background: "rgba(255,255,255,0.12)",
+    background: "#ffffff",
     padding: 0,
+    transition: "box-shadow 0.15s, border 0.15s",
   },
   image: {
     width: "100%",
-    height: "180px",
+    height: "160px",
     objectFit: "cover",
   },
   cardBody: {
-    padding: "18px 16px 20px",
+    padding: "16px",
   },
   productName: {
-    margin: 0,
-    fontSize: "1.1rem",
-  },
-  brandText: {
-    margin: "10px 0 0",
-    color: "rgba(255,255,255,0.78)",
-    fontSize: "0.95rem",
-  },
-  statusBadge: {
-    display: "inline-block",
-    marginTop: "16px",
-    padding: "8px 14px",
-    borderRadius: "999px",
-    background: "rgba(255,255,255,0.16)",
+    margin: "0 0 12px",
+    fontSize: "1rem",
     fontWeight: 700,
-    color: "white",
-    fontSize: "0.85rem",
+    color: "#111",
+    lineHeight: 1.3,
+  },
+  badge: {
+    display: "inline-block",
+    padding: "6px 14px",
+    borderRadius: "50px",
+    fontWeight: 700,
+    fontSize: "0.8rem",
+    transition: "all 0.15s",
   },
 };

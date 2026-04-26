@@ -8,26 +8,22 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  async function handleLogin(e) { //hello
+  async function handleLogin(e) {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         setError(data.message || "Login failed");
         setLoading(false);
         return;
       }
-
       localStorage.setItem("token", data.token);
       localStorage.setItem("username", data.username);
       navigate("/");
@@ -40,10 +36,8 @@ export default function Login() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        <h1 style={styles.logo}>🥦 SmartBite</h1>
+        <h1 style={styles.logo}>SmartBite</h1>
         <p style={styles.tagline}>Scan food. Understand your health.</p>
-
-        <h2 style={styles.heading}>Welcome back</h2>
 
         <form onSubmit={handleLogin} style={styles.form}>
           <input
@@ -62,10 +56,8 @@ export default function Login() {
             style={styles.input}
             autoComplete="current-password"
           />
-
           {error && <p style={styles.error}>{error}</p>}
-
-          <button type="submit" style={styles.btn} disabled={loading}>
+          <button type="submit" style={styles.primaryBtn} disabled={loading}>
             {loading ? "Signing in..." : "Log In"}
           </button>
         </form>
@@ -84,37 +76,35 @@ export default function Login() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(160deg, #1a5c2a 0%, #2d8a3e 50%, #f5a623 100%)",
+    background: "#e8ede9",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     padding: "20px",
+    fontFamily: "'DM Sans', sans-serif",
   },
   card: {
-    background: "rgba(255,255,255,0.96)",
+    background: "#ffffff",
     borderRadius: "24px",
-    padding: "48px 40px",
+    padding: "52px 44px",
     width: "100%",
-    maxWidth: "400px",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+    maxWidth: "420px",
+    boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
     textAlign: "center",
   },
   logo: {
-    fontSize: "2.2rem",
-    color: "#1a5c2a",
-    fontWeight: "bold",
-    marginBottom: "6px",
+    fontFamily: "'DM Serif Display', serif",
+    fontSize: "2.6rem",
+    fontWeight: 400,
+    color: "#111",
+    margin: "0 0 10px",
+    letterSpacing: "-0.5px",
   },
   tagline: {
-    color: "#666",
-    fontSize: "0.9rem",
-    marginBottom: "32px",
-  },
-  heading: {
-    fontSize: "1.4rem",
-    color: "#1a3a20",
-    marginBottom: "24px",
-    fontWeight: "bold",
+    color: "#888",
+    fontSize: "0.95rem",
+    marginBottom: "36px",
+    lineHeight: 1.5,
   },
   form: {
     display: "flex",
@@ -122,42 +112,47 @@ const styles = {
     gap: "14px",
   },
   input: {
-    padding: "13px 18px",
+    padding: "13px 20px",
     fontSize: "15px",
     borderRadius: "50px",
-    border: "2px solid #e0e0e0",
+    border: "1.5px solid #dde5de",
     outline: "none",
+    fontFamily: "'DM Sans', sans-serif",
+    background: "#f7faf7",
+    color: "#222",
     transition: "border-color 0.2s",
   },
-  btn: {
+  primaryBtn: {
     marginTop: "6px",
     padding: "14px",
-    fontSize: "16px",
-    fontWeight: "bold",
-    background: "linear-gradient(135deg, #2d8a3e, #1a5c2a)",
+    fontSize: "15px",
+    fontWeight: 700,
+    background: "#2d5a3d",
     color: "white",
     border: "none",
     borderRadius: "50px",
     cursor: "pointer",
-    letterSpacing: "0.5px",
-    boxShadow: "0 6px 18px rgba(45,138,62,0.35)",
+    letterSpacing: "0.3px",
+    fontFamily: "'DM Sans', sans-serif",
+    transition: "background 0.2s",
   },
   error: {
-    color: "#d62828",
+    color: "#c0392b",
     fontSize: "14px",
     margin: "0",
-    padding: "8px 14px",
-    background: "#fff0f0",
-    borderRadius: "8px",
+    padding: "10px 16px",
+    background: "#fdf0ef",
+    borderRadius: "12px",
+    textAlign: "left",
   },
   switchText: {
     marginTop: "28px",
-    color: "#555",
+    color: "#777",
     fontSize: "14px",
   },
   link: {
-    color: "#2d8a3e",
-    fontWeight: "bold",
+    color: "#2d5a3d",
+    fontWeight: 700,
     textDecoration: "none",
   },
 };

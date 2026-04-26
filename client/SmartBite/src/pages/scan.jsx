@@ -7,15 +7,13 @@ export default function ScanPage() {
   const readerRef = useRef(null);
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState("");
-  const [status, setStatus] = useState("Press 'Start Camera' to begin scanning");
+  const [status, setStatus] = useState("Press 'Start Camera' to begin");
   const foundRef = useRef(false);
   const navigate = useNavigate();
 
   function stopScanner() {
     if (readerRef.current) {
-      try {
-        readerRef.current.reset();
-      } catch (e) {}
+      try { readerRef.current.reset(); } catch (e) {}
       readerRef.current = null;
     }
     setScanning(false);
@@ -25,22 +23,19 @@ export default function ScanPage() {
     setError("");
     setStatus("Starting camera...");
     foundRef.current = false;
-
     try {
       const reader = new BrowserMultiFormatReader();
       readerRef.current = reader;
       setScanning(true);
       setStatus("Point camera at a barcode...");
-
       await reader.decodeFromVideoDevice(
         undefined,
         videoRef.current,
         async (result, err) => {
           if (foundRef.current) return;
-
           if (result) {
             const barcode = result.getText();
-            setStatus(`Barcode detected: ${barcode} — looking up product...`);
+            setStatus(`Detected: ${barcode}`);
             foundRef.current = true;
             stopScanner();
             await lookupProduct(barcode);
@@ -48,27 +43,23 @@ export default function ScanPage() {
         }
       );
     } catch (err) {
-      setError("Could not access camera. Make sure you've granted camera permissions.");
+      setError("Camera access denied. Please check permissions.");
       setScanning(false);
     }
   }
 
   async function lookupProduct(barcode) {
-    console.log("Scanned barcode:", barcode);
     try {
       const response = await fetch(`http://localhost:5000/api/products/barcode/${barcode}`);
       const product = await response.json();
-
       if (!product || !product._id) {
-        setStatus("");
-        setError(`No product found for barcode: ${barcode}. It may not be in the database yet.`);
+        setError(`Product ${barcode} not found in our database.`);
         foundRef.current = false;
         return;
       }
-
       navigate(`/product/${product._id}`, { state: { product } });
     } catch (err) {
-      setError("Error connecting to server.");
+      setError("Server connection error.");
       foundRef.current = false;
     }
   }
@@ -78,86 +69,82 @@ export default function ScanPage() {
   }, []);
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>Scan Product</h1>
-        <p style={styles.subtitle}>Hold the barcode up to the camera</p>
+    <div style={s.page}>
+      <div style={s.card}>
+        <h1 style={s.title}>Scan Product</h1>
+        <p style={s.subtitle}>
+          Hold the barcode up to the camera to receive a health score.
+        </p>
 
-        {/* Video feed */}
-        <div style={styles.videoWrapper}>
+        <div style={s.videoWrapper}>
           <video
             ref={videoRef}
-            style={{
-              ...styles.video,
-              display: scanning ? "block" : "none",
-            }}
+            style={{ ...s.video, display: scanning ? "block" : "none" }}
           />
           {!scanning && (
-            <div style={styles.placeholder}>
-              <span style={styles.placeholderIcon}></span>
-              <p style={styles.placeholderText}>Camera off</p>
+            <div style={s.placeholder}>
+              <span style={s.cameraIcon}>📷</span>
+              <p style={s.placeholderText}>Camera is off</p>
             </div>
           )}
-          {/* Scanning overlay */}
-          {scanning && (
-            <div style={styles.scanLine} />
-          )}
+          {scanning && <div style={s.scanLine} />}
         </div>
 
-        {/* Status message */}
-        <p style={styles.status}>{status}</p>
+        <p style={s.status}>{status}</p>
+        {error && <p style={s.error}>{error}</p>}
 
-        {/* Error message */}
-        {error && <p style={styles.error}>{error}</p>}
-
-        {/* Buttons */}
-        <div style={styles.buttons}>
+        <div style={s.buttons}>
           {!scanning ? (
-            <button onClick={startScanner} style={styles.startBtn}>
+            <button onClick={startScanner} style={s.primaryBtn}>
               Start Camera
             </button>
           ) : (
-            <button onClick={stopScanner} style={styles.stopBtn}>
+            <button onClick={stopScanner} style={s.stopBtn}>
               Stop Camera
             </button>
           )}
         </div>
 
-        <Link to="/" style={styles.backLink}>Back</Link>
+        <Link to="/" style={s.linkFix}>
+          <button style={s.outlineBtn}>← Back to Home</button>
+        </Link>
       </div>
     </div>
   );
 }
 
-const styles = {
+const s = {
   page: {
+    fontFamily: "'DM Sans', sans-serif",
     minHeight: "100vh",
-    background: "linear-gradient(160deg, #1a5c2a 0%, #2d8a3e 50%, #f5a623 100%)",
+    background: "#e8ede9",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "20px",
-    fontFamily: "Lato, sans-serif",
+    padding: "40px 20px",
   },
   card: {
-    background: "rgba(255,255,255,0.96)",
-    borderRadius: "24px",
-    padding: "40px 32px",
     width: "100%",
-    maxWidth: "480px",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+    maxWidth: 500,
+    background: "#ffffff",
+    borderRadius: "24px",
+    padding: "48px 44px",
+    boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
     textAlign: "center",
   },
   title: {
-    fontSize: "1.8rem",
-    color: "#1a5c2a",
-    fontWeight: "900",
-    marginBottom: "6px",
+    fontFamily: "'DM Serif Display', serif",
+    fontSize: "2.2rem",
+    fontWeight: 400,
+    color: "#111",
+    margin: "0 0 10px",
+    letterSpacing: "-0.5px",
   },
   subtitle: {
-    color: "#666",
-    fontSize: "0.95rem",
-    marginBottom: "24px",
+    fontSize: "15px",
+    color: "#888",
+    margin: "0 0 28px",
+    lineHeight: 1.6,
   },
   videoWrapper: {
     position: "relative",
@@ -165,8 +152,9 @@ const styles = {
     height: "280px",
     borderRadius: "16px",
     overflow: "hidden",
-    background: "#1a1a1a",
-    marginBottom: "16px",
+    background: "#f0f4f1",
+    marginBottom: "20px",
+    border: "1.5px solid #dde5de",
   },
   video: {
     width: "100%",
@@ -179,71 +167,81 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     height: "100%",
-    color: "#888",
+    gap: "8px",
   },
-  placeholderIcon: {
-    fontSize: "3rem",
-    marginBottom: "10px",
+  cameraIcon: {
+    fontSize: "2rem",
+    opacity: 0.4,
   },
   placeholderText: {
-    fontSize: "0.9rem",
+    fontSize: "14px",
+    color: "#aaa",
+    margin: 0,
   },
   scanLine: {
     position: "absolute",
-    top: "50%",
     left: "10%",
     width: "80%",
-    height: "3px",
-    background: "rgba(245, 166, 35, 0.85)",
+    height: "2px",
+    background: "#2d5a3d",
     borderRadius: "2px",
-    boxShadow: "0 0 12px rgba(245,166,35,0.7)",
-    animation: "scanPulse 1.5s ease-in-out infinite",
+    boxShadow: "0 0 10px rgba(45,90,61,0.4)",
+    zIndex: 10,
+    top: "50%",
   },
   status: {
-    color: "#444",
-    fontSize: "0.9rem",
-    marginBottom: "8px",
-    minHeight: "20px",
+    fontSize: "14px",
+    color: "#666",
+    marginBottom: "16px",
+    fontWeight: 500,
   },
   error: {
-    color: "#d62828",
-    fontSize: "0.9rem",
-    padding: "10px 14px",
-    background: "#fff0f0",
-    borderRadius: "10px",
-    marginBottom: "12px",
+    fontSize: "13px",
+    color: "#c0392b",
+    background: "#fdf0ef",
+    padding: "10px 16px",
+    borderRadius: "12px",
+    marginBottom: "16px",
   },
   buttons: {
-    marginBottom: "20px",
+    marginBottom: "14px",
   },
-  startBtn: {
+  primaryBtn: {
     padding: "13px 36px",
     fontSize: "15px",
-    fontWeight: "bold",
-    background: "linear-gradient(135deg, #2d8a3e, #1a5c2a)",
-    color: "white",
+    fontWeight: 700,
+    background: "#2d5a3d",
+    color: "#fff",
     border: "none",
     borderRadius: "50px",
     cursor: "pointer",
-    boxShadow: "0 6px 18px rgba(45,138,62,0.35)",
-    letterSpacing: "0.5px",
+    fontFamily: "'DM Sans', sans-serif",
   },
   stopBtn: {
     padding: "13px 36px",
     fontSize: "15px",
-    fontWeight: "bold",
-    background: "linear-gradient(135deg, #d62828, #a01010)",
-    color: "white",
-    border: "none",
+    fontWeight: 700,
+    background: "#fff",
+    color: "#c0392b",
+    border: "1.5px solid #c0392b",
     borderRadius: "50px",
     cursor: "pointer",
-    boxShadow: "0 6px 18px rgba(214,40,40,0.35)",
-    letterSpacing: "0.5px",
+    fontFamily: "'DM Sans', sans-serif",
   },
-  backLink: {
-    color: "#2d8a3e",
+  outlineBtn: {
+    padding: "11px 28px",
+    borderRadius: "50px",
+    border: "1.5px solid #2d5a3d",
+    background: "transparent",
+    color: "#2d5a3d",
+    fontSize: "14px",
+    fontWeight: 700,
+    cursor: "pointer",
+    fontFamily: "'DM Sans', sans-serif",
+  },
+  linkFix: {
     textDecoration: "none",
-    fontSize: "0.9rem",
-    fontWeight: "bold",
+    display: "inline-block",
+    color: "inherit",
   },
 };

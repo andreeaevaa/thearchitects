@@ -39,52 +39,22 @@ export default function CompareResults() {
   }, [location.search]);
 
   useEffect(() => {
-    if (products.length !== 2 || products.some((product) => !product?._id)) {
-      return;
-    }
-
-    const ids = products.map((product) => product._id);
-    const names = products.map((product) => product.productName || "Unknown product");
+    if (products.length !== 2 || products.some((p) => !p?._id)) return;
+    const ids = products.map((p) => p._id);
+    const names = products.map((p) => p.productName || "Unknown product");
     const sortedKey = [...ids].sort().join("_");
-
     const stored = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
-    const updatedHistory = stored.filter((entry) => entry.key !== sortedKey);
-    const nextEntry = {
-      key: sortedKey,
-      ids,
-      names,
-      date: new Date().toISOString(),
-    };
-
+    const updated = stored.filter((e) => e.key !== sortedKey);
     localStorage.setItem(
       HISTORY_KEY,
-      JSON.stringify([nextEntry, ...updatedHistory].slice(0, 10))
+      JSON.stringify([{ key: sortedKey, ids, names, date: new Date().toISOString() }, ...updated].slice(0, 10))
     );
   }, [products]);
 
-  function buildScoreBox(product) {
-    const score = product.healthScore || 0;
-    let boxColor = "#2eb82e";
-    let statusText = "Great Choice!";
-
-    if (score < 40) {
-      boxColor = "#ff4d4d";
-      statusText = "Poor Choice";
-    } else if (score < 70) {
-      boxColor = "#ffcc00";
-      statusText = "Moderate Choice";
-    }
-
-    return (
-      <div style={{ ...styles.scoreBox, backgroundColor: boxColor }}>
-        <h2 style={styles.scoreLabel}>Health Score</h2>
-        <div style={styles.scoreNumber}>{score}/100</div>
-        <p style={styles.statusText}>{statusText}</p>
-        <div style={styles.progressContainer}>
-          <div style={{ ...styles.progressBar, left: `${score}%` }}></div>
-        </div>
-      </div>
-    );
+  function getScoreStyle(score) {
+    if (score >= 70) return { color: "#2d5a3d", bg: "#edf7f0", label: "Great Choice" };
+    if (score >= 40) return { color: "#b7791f", bg: "#fef9ec", label: "Moderate Choice" };
+    return { color: "#c0392b", bg: "#fdf0ef", label: "Poor Choice" };
   }
 
   function getHealthTags(product) {
@@ -95,88 +65,112 @@ export default function CompareResults() {
     const sodium = product.nutrition?.sodium ?? Infinity;
     const protein = product.nutrition?.protein ?? 0;
 
-    if (ingredientsText && !/(wheat|barley|rye|spelt|triticale|oats|malt|semolina|durum)/.test(ingredientsText)) {
+    if (ingredientsText && !/(wheat|barley|rye|spelt|triticale|oats|malt|semolina|durum)/.test(ingredientsText))
       tags.push("Gluten Free");
-    }
-    if (carbs <= 5 && sugar <= 5) {
-      tags.push("Keto-Friendly");
-    }
-    if (protein >= 8) {
-      tags.push("High protein");
-    }
-    if (sugar <= 5) {
-      tags.push("Low sugar");
-    }
-    if (sodium <= 140) {
-      tags.push("Low sodium");
-    }
-    if (carbs <= 15 && carbs > 5) {
-      tags.push("Low carbs");
-    }
-
-    if (tags.length === 0) {
-      tags.push("No health tags available");
-    }
+    if (carbs <= 5 && sugar <= 5) tags.push("Keto-Friendly");
+    if (protein >= 8) tags.push("High Protein");
+    if (sugar <= 5) tags.push("Low Sugar");
+    if (sodium <= 140) tags.push("Low Sodium");
+    if (carbs <= 15 && carbs > 5) tags.push("Low Carbs");
+    if (tags.length === 0) tags.push("No tags available");
 
     return [...new Set(tags)];
   }
 
   if (loading) {
-    return <div style={styles.page}>Loading comparison...</div>;
+    return (
+      <div style={styles.page}>
+        <div style={styles.stateBox}>Loading comparison...</div>
+      </div>
+    );
   }
 
   if (error) {
     return (
       <div style={styles.page}>
-        <h1>Compare Products</h1>
-        <p>{error}</p>
-        <Link to="/product-comparison" style={styles.button}>
-          Choose products again
-        </Link>
+        <div style={{ textAlign: "center", padding: "60px 20px" }}>
+          <h1 style={styles.title}>Compare Products</h1>
+          <p style={{ color: "#888", marginBottom: "24px" }}>{error}</p>
+          <Link to="/product-comparison" style={styles.primaryBtn}>
+            Choose products again
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
     <div style={styles.page}>
-      <header style={styles.header}>
-        <h1>Comparison Result</h1>
-        <p style={styles.subtext}>
-          See both product health ratings and nutrition details side by side.
+      {/* Header */}
+      <div style={styles.header}>
+        <h1 style={styles.title}>Comparison Results</h1>
+        <p style={styles.subtitle}>
+          Side-by-side health ratings and nutrition details.
         </p>
-      </header>
-
-      <div style={styles.grid}>
-        {products.map((product) => (
-          <div key={product._id} style={styles.productCard}>
-            <h2 style={styles.productTitle}>{product.productName}</h2>
-            <div style={styles.content}>
-              <div style={styles.imageBox}>
-                <img src={product.image} alt={product.productName} style={styles.image} />
-              </div>
-              {buildScoreBox(product)}
-              <div style={styles.nutritionCard}>
-                <NutritionLabel food={product} />
-              </div>
-            </div>
-            <div style={styles.ingredientsBox}>
-              <h3>Ingredients</h3>
-              <p>{product.ingredients?.length ? product.ingredients.join(", ") : "Ingredients not listed."}</p>
-              <div style={styles.tagRow}>
-                {getHealthTags(product).map((tag) => (
-                  <span key={tag} style={styles.tagBadge}>{tag}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        ))}
       </div>
 
+      {/* Product cards grid */}
+      <div style={styles.grid}>
+        {products.map((product) => {
+          const score = product.healthScore || 0;
+          const { color, bg, label } = getScoreStyle(score);
+          const tags = getHealthTags(product);
+
+          return (
+            <div key={product._id} style={styles.card}>
+              {/* Product image */}
+              <img
+                src={product.image}
+                alt={product.productName}
+                style={styles.image}
+              />
+
+              {/* Product name */}
+              <div style={styles.cardBody}>
+                <h2 style={styles.productName}>{product.productName}</h2>
+
+                {/* Health score */}
+                <div style={{ ...styles.scoreBox, background: bg }}>
+                  <div style={{ ...styles.scoreNumber, color }}>{score}<span style={styles.scoreOf}>/100</span></div>
+                  <div style={{ ...styles.scoreLabel, color }}>{label}</div>
+                  <div style={styles.scoreBarTrack}>
+                    <div style={{ ...styles.scoreBarFill, width: `${score}%`, background: color }} />
+                  </div>
+                </div>
+
+                {/* Health tags */}
+                <div style={styles.tagRow}>
+                  {tags.map((tag) => (
+                    <span key={tag} style={styles.tag}>{tag}</span>
+                  ))}
+                </div>
+
+                {/* Nutrition label */}
+                <div style={styles.nutritionWrapper}>
+                  <NutritionLabel food={product} />
+                </div>
+
+                {/* Ingredients */}
+                <div style={styles.ingredientsBox}>
+                  <p style={styles.ingredientsTitle}>Ingredients</p>
+                  <p style={styles.ingredientsText}>
+                    {product.ingredients?.length
+                      ? product.ingredients.join(", ")
+                      : "Not listed."}
+                  </p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Bottom buttons */}
       <div style={styles.buttonRow}>
-        <Link to="/product-comparison" style={styles.secondaryButton}>
+        <Link to="/product-comparison" style={styles.outlineBtn}>
           Compare different products
         </Link>
-        <Link to="/" style={styles.button}>
+        <Link to="/" style={styles.primaryBtn}>
           Back to Home
         </Link>
       </div>
@@ -187,158 +181,162 @@ export default function CompareResults() {
 const styles = {
   page: {
     minHeight: "100vh",
-    padding: "40px",
-    background: "linear-gradient(160deg, #1a5c2a 0%, #2d8a3e 40%, #f5a623 100%)",
-    color: "white",
-    fontFamily: "Lato, sans-serif",
+    background: "#e8ede9",
+    padding: "48px 40px 60px",
+    fontFamily: "'DM Sans', sans-serif",
+    color: "#111",
   },
   header: {
     textAlign: "center",
-    marginBottom: "30px",
+    marginBottom: "36px",
   },
-  subtext: {
-    opacity: 0.9,
-    maxWidth: "680px",
-    margin: "16px auto 0",
-    lineHeight: 1.7,
+  title: {
+    fontFamily: "'DM Serif Display', serif",
+    fontSize: "2.4rem",
+    fontWeight: 400,
+    margin: "0 0 12px",
+    letterSpacing: "-0.5px",
+  },
+  subtitle: {
+    color: "#666",
+    fontSize: "15px",
+    margin: 0,
+    lineHeight: 1.6,
+  },
+  stateBox: {
+    textAlign: "center",
+    padding: "80px 20px",
+    color: "#888",
+    fontSize: "15px",
   },
   grid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
     gap: "20px",
-    marginBottom: "24px",
+    marginBottom: "32px",
   },
-  productCard: {
-    background: "rgba(255,255,255,0.1)",
-    borderRadius: "28px",
-    padding: "20px",
-    boxShadow: "0 16px 40px rgba(0,0,0,0.18)",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    maxHeight: "calc(100vh - 220px)",
+  card: {
+    background: "#ffffff",
+    borderRadius: "24px",
     overflow: "hidden",
-  },
-  productTitle: {
-    marginBottom: "14px",
-    fontSize: "1.4rem",
-    fontWeight: 700,
-  },
-  content: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "24px",
-    flexWrap: "wrap",
-    marginBottom: "22px",
-    width: "100%",
-  },
-  imageBox: {
-    width: "240px",
+    boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
   },
   image: {
     width: "100%",
-    borderRadius: "20px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
     height: "200px",
     objectFit: "cover",
   },
-  scoreBox: {
-    width: "100%",
-    maxWidth: "280px",
+  cardBody: {
     padding: "24px",
-    borderRadius: "28px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    boxShadow: "0 12px 30px rgba(0,0,0,0.18)",
-    marginBottom: "18px",
   },
-  scoreLabel: {
-    fontSize: "0.85rem",
-    textTransform: "uppercase",
-    letterSpacing: "2px",
-    marginBottom: "12px",
-    opacity: 0.85,
+  productName: {
+    fontFamily: "'DM Serif Display', serif",
+    fontSize: "1.4rem",
+    fontWeight: 400,
+    margin: "0 0 20px",
+    letterSpacing: "-0.3px",
+  },
+  scoreBox: {
+    borderRadius: "16px",
+    padding: "20px 24px",
+    marginBottom: "20px",
   },
   scoreNumber: {
-    fontSize: "4rem",
+    fontSize: "3rem",
     fontWeight: 800,
+    lineHeight: 1,
+    marginBottom: "4px",
   },
-  statusText: {
-    marginTop: "12px",
-    fontSize: "1.05rem",
+  scoreOf: {
+    fontSize: "1.2rem",
+    fontWeight: 400,
+    opacity: 0.6,
+  },
+  scoreLabel: {
+    fontSize: "0.9rem",
     fontWeight: 700,
+    marginBottom: "14px",
   },
-  progressContainer: {
-    width: "100%",
-    height: "8px",
-    background: "rgba(255,255,255,0.2)",
-    borderRadius: "10px",
-    marginTop: "22px",
-    position: "relative",
+  scoreBarTrack: {
+    height: "6px",
+    background: "rgba(0,0,0,0.08)",
+    borderRadius: "50px",
+    overflow: "hidden",
   },
-  progressBar: {
-    position: "absolute",
-    top: "-4px",
-    width: "4px",
-    height: "16px",
-    background: "white",
-    borderRadius: "2px",
-  },
-  nutritionCard: {
-    width: "100%",
-    marginTop: "24px",
-    maxHeight: "190px",
-    overflowY: "auto",
-  },
-  ingredientsBox: {
-    width: "100%",
-    marginTop: "18px",
-    padding: "18px",
-    background: "rgba(255,255,255,0.08)",
-    borderRadius: "20px",
-    textAlign: "left",
-    maxHeight: "180px",
-    overflowY: "auto",
+  scoreBarFill: {
+    height: "100%",
+    borderRadius: "50px",
+    transition: "width 0.5s ease",
   },
   tagRow: {
     display: "flex",
     flexWrap: "wrap",
-    gap: "10px",
-    marginTop: "16px",
+    gap: "8px",
+    marginBottom: "20px",
   },
-  tagBadge: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "8px 14px",
-    borderRadius: "999px",
-    background: "rgba(255,255,255,0.16)",
-    color: "white",
+  tag: {
+    padding: "6px 14px",
+    borderRadius: "50px",
+    background: "#f0f4f1",
+    color: "#2d5a3d",
+    fontWeight: 700,
+    fontSize: "0.78rem",
+    border: "1.5px solid #dde5de",
+  },
+  nutritionWrapper: {
+    marginBottom: "20px",
+    maxHeight: "200px",
+    overflowY: "auto",
+    borderRadius: "12px",
+    border: "1.5px solid #e8ede9",
+    padding: "4px",
+  },
+  ingredientsBox: {
+    background: "#f7faf7",
+    borderRadius: "12px",
+    padding: "16px",
+  },
+  ingredientsTitle: {
     fontWeight: 700,
     fontSize: "0.85rem",
+    color: "#888",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+    margin: "0 0 8px",
+  },
+  ingredientsText: {
+    fontSize: "13px",
+    color: "#555",
+    lineHeight: 1.6,
+    margin: 0,
   },
   buttonRow: {
     display: "flex",
     justifyContent: "center",
-    gap: "14px",
+    gap: "12px",
     flexWrap: "wrap",
   },
-  button: {
-    padding: "14px 32px",
-    background: "#f5a623",
-    color: "#1a1a1a",
+  primaryBtn: {
+    padding: "13px 32px",
+    background: "#2d5a3d",
+    color: "#fff",
     border: "none",
-    borderRadius: "999px",
-    fontWeight: "700",
+    borderRadius: "50px",
+    fontWeight: 700,
+    fontSize: "14px",
     textDecoration: "none",
+    fontFamily: "'DM Sans', sans-serif",
+    cursor: "pointer",
   },
-  secondaryButton: {
-    padding: "14px 32px",
-    background: "rgba(255,255,255,0.16)",
-    color: "white",
-    border: "1px solid rgba(255,255,255,0.4)",
-    borderRadius: "999px",
+  outlineBtn: {
+    padding: "13px 32px",
+    background: "transparent",
+    color: "#2d5a3d",
+    border: "1.5px solid #2d5a3d",
+    borderRadius: "50px",
+    fontWeight: 700,
+    fontSize: "14px",
     textDecoration: "none",
+    fontFamily: "'DM Sans', sans-serif",
   },
 };
