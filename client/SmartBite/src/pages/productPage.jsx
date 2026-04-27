@@ -14,7 +14,7 @@ function getHealthTags(product) {
     tags.push("Gluten Free");
   }
   if (carbs <= 5 && sugar <= 5) tags.push("Keto-Friendly");
-  if (protein >= 8)             tags.push("High Protein");
+  if (protein >= 10)             tags.push("High Protein");
   if (sugar <= 5)               tags.push("Low Sugar");
   if (sodium <= 100)            tags.push("Low Sodium");
   if (carbs <= 15 && carbs > 5) tags.push("Low Carbs");
