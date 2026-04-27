@@ -10,7 +10,7 @@ function getHealthTags(product) {
   const sodium  = product.nutrition?.sodium ?? Infinity;
   const protein = product.nutrition?.protein ?? 0;
 
-  if (ingredientsText && !/(wheat|barley|rye|spelt|triticale|oats|malt|semolina|durum)/.test(ingredientsText)) {
+  if (ingredientsText && !/(wheat|barley|rye|spelt|triticale|malt|semolina|durum)/.test(ingredientsText)) {
     tags.push("Gluten Free");
   }
   if (carbs <= 5 && sugar <= 5) tags.push("Keto-Friendly");
